@@ -20,6 +20,11 @@
             align-items: center;
             overflow: hidden;
             font-family: 'Courier New', monospace;
+            transition: background-color 0.1s;
+        }
+
+        body.color-shift {
+            background-color: #2a1a2a;
         }
 
         #backgroundLayer {
@@ -39,6 +44,18 @@
             white-space: pre;
             user-select: none;
             line-height: 1.1;
+        }
+
+        .floating-text {
+            position: absolute;
+            font-family: 'Courier New', monospace;
+            white-space: nowrap;
+            user-select: none;
+            font-size: 24px;
+            font-weight: bold;
+            color: #ff6b6b;
+            opacity: 0.7;
+            z-index: 2;
         }
 
         #buttonContainer {
@@ -77,9 +94,9 @@
             position: fixed;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%);
             z-index: 50;
             display: none;
+            filter: drop-shadow(0 0 20px rgba(139, 92, 246, 0.6));
         }
 
         #prankVideo {
@@ -89,13 +106,24 @@
             display: block;
             border: 3px solid #8b5cf6;
             border-radius: 4px;
-            box-shadow: 0 0 15px rgba(139, 92, 246, 0.4);
+        }
+
+        #colorFlash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+            pointer-events: none;
+            display: none;
         }
     </style>
 </head>
 <body>
 
     <div id="backgroundLayer"></div>
+    <div id="colorFlash"></div>
 
     <div id="buttonContainer">
         <button class="trust-btn" onclick="startPrank()">TRUST ME</button>
@@ -112,7 +140,29 @@
             'HEYYEYAAEYAAAEYAEYAA',
             "What's going on?",
             '┌( ಠ_ಠ )┘',
-            '╰(°∇≦*)╮'
+            '╰(°∇≦*)╮',
+            'WAIT',
+            'WHY',
+            'NOPE',
+            'HELP',
+            '???',
+            'LMAO',
+            'RUN'
+        ];
+
+        const extraEmojis = [
+            '⊙_⊙',
+            'ಠ╭╮ಠ',
+            '(ノಠ益ಠ)ノ',
+            '(╯°□°)╯︵ ┻━┻',
+            '┬─┬ ノ( ゜-゜ノ)',
+            'ヽ༼ຈل͜ຈ༽ノ',
+            '(´・ω・`)',
+            '(´；ω；`)',
+            'щ(゜ロ゜щ)',
+            '(๑•́ ω •̀๑)',
+            'ლ(´ڡ`ლ)',
+            '(°ロ°)σ'
         ];
 
         const asciiDancers = [
@@ -240,6 +290,7 @@
         let activeCharacters = [];
         const maxCharacters = 25;
         let animationRunning = false;
+        let shakeIntensity = 0;
 
         function startPrank() {
             document.getElementById('buttonContainer').style.display = 'none';
@@ -251,6 +302,73 @@
             animationRunning = true;
             startBackgroundAnimation();
             startVideoZoom(video);
+            startScreenEffects();
+        }
+
+        function startScreenEffects() {
+            // Screen shake
+            setInterval(() => {
+                if (animationRunning && Math.random() < 0.3) {
+                    shakeIntensity = 2 + Math.random() * 3;
+                    const shakeX = (Math.random() - 0.5) * shakeIntensity;
+                    const shakeY = (Math.random() - 0.5) * shakeIntensity;
+                    document.body.style.transform = `translate(${shakeX}px, ${shakeY}px)`;
+                    
+                    setTimeout(() => {
+                        document.body.style.transform = 'translate(0, 0)';
+                    }, 50);
+                }
+            }, 300);
+
+            // Color shifts
+            const colorShifts = ['#1a1a1a', '#2a1a2a', '#1a2a2a', '#2a2a1a', '#2a1a1a'];
+            setInterval(() => {
+                if (animationRunning && Math.random() < 0.2) {
+                    const randomColor = colorShifts[Math.floor(Math.random() * colorShifts.length)];
+                    document.body.style.backgroundColor = randomColor;
+                    setTimeout(() => {
+                        document.body.style.backgroundColor = '#1a1a1a';
+                    }, 200);
+                }
+            }, 800);
+
+            // Color flashes
+            setInterval(() => {
+                if (animationRunning && Math.random() < 0.15) {
+                    const flashColors = ['rgba(255,0,0,0.1)', 'rgba(0,255,0,0.1)', 'rgba(0,0,255,0.1)', 'rgba(255,255,0,0.1)'];
+                    const flash = document.getElementById('colorFlash');
+                    flash.style.backgroundColor = flashColors[Math.floor(Math.random() * flashColors.length)];
+                    flash.style.display = 'block';
+                    setTimeout(() => {
+                        flash.style.display = 'none';
+                    }, 100);
+                }
+            }, 1000);
+
+            // Random floating text
+            setInterval(() => {
+                if (animationRunning && Math.random() < 0.4) {
+                    spawnFloatingText();
+                }
+            }, 1500);
+        }
+
+        function spawnFloatingText() {
+            const text = floatingPhrases[Math.floor(Math.random() * floatingPhrases.length)];
+            const element = document.createElement('div');
+            element.className = 'floating-text';
+            element.textContent = text;
+            element.style.left = Math.random() * window.innerWidth + 'px';
+            element.style.top = Math.random() * window.innerHeight + 'px';
+            element.style.color = ['#ff6b6b', '#ffd93d', '#6bcf7f', '#4d96ff'][Math.floor(Math.random() * 4)];
+            element.style.fontSize = (20 + Math.random() * 20) + 'px';
+            element.style.transform = `rotate(${Math.random() * 360}deg)`;
+
+            document.getElementById('backgroundLayer').appendChild(element);
+
+            setTimeout(() => {
+                element.remove();
+            }, 3000);
         }
 
         function startVideoZoom(video) {
@@ -268,6 +386,13 @@
                     
                     const currentWidth = startWidth + (endWidth - startWidth) * progress;
                     const currentHeight = startHeight + (endHeight - startHeight) * progress;
+                    
+                    // Zoom blur effect
+                    const blur = progress * 3;
+                    
+                    const videoContainer = document.getElementById('videoContainer');
+                    videoContainer.style.filter = `drop-shadow(0 0 ${20 + blur * 5}px rgba(139, 92, 246, 0.6)) blur(${blur * 0.1}px)`;
+                    videoContainer.style.transform = `translate(-50%, -50%) scale(${1 + progress * 0.1})`;
                     
                     video.style.width = currentWidth + 'px';
                     video.style.height = currentHeight + 'px';
@@ -306,7 +431,46 @@
                 }
             }, 1000);
 
+            // Spawn extra emoji characters
+            setInterval(() => {
+                if (Math.random() < 0.4 && animationRunning) {
+                    spawnEmojiCharacter();
+                }
+            }, 2000);
+
             updateAnimation();
+        }
+
+        function spawnEmojiCharacter() {
+            const emoji = extraEmojis[Math.floor(Math.random() * extraEmojis.length)];
+            const element = document.createElement('div');
+            element.className = 'ascii-character';
+            element.textContent = emoji;
+            element.style.color = '#' + Math.floor(Math.random()*16777215).toString(16);
+            element.style.fontSize = (16 + Math.random() * 12) + 'px';
+            element.style.opacity = 0.6 + Math.random() * 0.4;
+
+            const startX = Math.random() * window.innerWidth;
+            const startY = Math.random() * window.innerHeight;
+            element.style.left = startX + 'px';
+            element.style.top = startY + 'px';
+
+            document.getElementById('backgroundLayer').appendChild(element);
+
+            const angle = Math.random() * Math.PI * 2;
+            const speed = 0.5 + Math.random() * 2;
+
+            const character = {
+                element: element,
+                x: startX,
+                y: startY,
+                vx: Math.cos(angle) * speed,
+                vy: Math.sin(angle) * speed,
+                isEmoji: true,
+                lifetime: 8000
+            };
+
+            activeCharacters.push(character);
         }
 
         function spawnCharacter() {
@@ -394,13 +558,15 @@
             for (let i = 0; i < activeCharacters.length; i++) {
                 const char = activeCharacters[i];
 
-                if (char.isPhrase) {
+                if (char.isPhrase || char.isEmoji) {
                     char.lifetime -= 16;
                     if (char.lifetime <= 0) {
                         char.element.remove();
                         toRemove.push(i);
                         continue;
                     }
+                    char.x += char.vx;
+                    char.y += char.vy;
                 } else {
                     char.frameTimer += 16;
                     if (char.frameTimer >= char.frameInterval) {
