@@ -15,6 +15,7 @@
             justify-content: center;
             align-items: center;
             overflow: hidden;
+            font-family: monospace;
         }
 
         .trust-btn {
@@ -28,11 +29,17 @@
             border-radius: 0;
             cursor: pointer;
             box-shadow: 6px 6px 0 #4c1d95;
+            transition: all 0.1s ease;
         }
 
         .trust-btn:hover {
             transform: translate(3px, 3px);
             box-shadow: 3px 3px 0 #4c1d95;
+        }
+
+        .trust-btn:active {
+            transform: translate(6px, 6px);
+            box-shadow: 0 0 0 #4c1d95;
         }
 
         #prankVideo {
@@ -44,6 +51,34 @@
             object-fit: cover;
             z-index: 9999;
         }
+
+        .error-message {
+            display: none;
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #1a1a1a;
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            color: #ff6b6b;
+            text-align: center;
+            font-size: 24px;
+            gap: 20px;
+        }
+
+        .error-message button {
+            background: #8b5cf6;
+            color: white;
+            border: 4px solid white;
+            padding: 12px 30px;
+            font-family: monospace;
+            font-size: 18px;
+            cursor: pointer;
+            box-shadow: 6px 6px 0 #4c1d95;
+        }
     </style>
 </head>
 
@@ -51,23 +86,43 @@
 
     <button class="trust-btn" onclick="startPrank()">TRUST ME</button>
 
-    <video id="prankVideo" src="./ez.mp4" controls playsinline></video>
+    <video id="prankVideo" playsinline></video>
+
+    <div class="error-message" id="errorMessage">
+        <div>Oops! Video failed to load 😅</div>
+        <div style="font-size: 16px;">Make sure ez.mp4 is in the same folder as this HTML file</div>
+        <button onclick="location.reload()">Try Again</button>
+    </div>
 
     <script>
         function startPrank() {
             const video = document.getElementById("prankVideo");
             const button = document.querySelector(".trust-btn");
+            const errorMessage = document.getElementById("errorMessage");
+
+            // Set video source
+            video.src = "./ez.mp4";
 
             button.style.display = "none";
             video.style.display = "block";
 
+            // Play video with error handling
             video.play()
                 .then(() => {
                     console.log("Video playing!");
                 })
                 .catch(error => {
-                    console.log("Video failed:", error);
+                    console.error("Video playback failed:", error);
+                    video.style.display = "none";
+                    errorMessage.style.display = "flex";
                 });
+
+            // Handle if video file doesn't load
+            video.addEventListener("error", () => {
+                console.error("Video failed to load");
+                video.style.display = "none";
+                errorMessage.style.display = "flex";
+            });
         }
     </script>
 
