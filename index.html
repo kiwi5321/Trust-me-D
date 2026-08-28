@@ -92,6 +92,7 @@
             border: 3px solid #8b5cf6;
             border-radius: 4px;
             box-shadow: 0 0 15px rgba(139, 92, 246, 0.4);
+            transition: max-width 0.1s linear, max-height 0.1s linear;
         }
 
         @media (max-width: 768px) {
@@ -256,16 +257,43 @@
         let activeCharacters = [];
         const maxCharacters = 25;
         let animationRunning = false;
+        let videoStartTime = 0;
 
         function startPrank() {
             document.getElementById('buttonContainer').style.display = 'none';
             document.getElementById('videoContainer').style.display = 'block';
             const video = document.getElementById('prankVideo');
+            videoStartTime = Date.now();
             video.play().catch(error => {
                 console.error('Playback failed:', error);
             });
             animationRunning = true;
             startBackgroundAnimation();
+            startVideoZoom();
+        }
+
+        function startVideoZoom() {
+            const video = document.getElementById('prankVideo');
+            const videoDuration = 127000; // ~2:07 in milliseconds
+            const startMaxWidth = 640;
+            const endMaxWidth = 1200; // Fills screen and goes a bit beyond
+            const startMaxHeight = 360;
+            const endMaxHeight = 675;
+
+            const zoomInterval = setInterval(() => {
+                const elapsed = Date.now() - videoStartTime;
+                const progress = Math.min(elapsed / videoDuration, 1);
+
+                const currentMaxWidth = startMaxWidth + (endMaxWidth - startMaxWidth) * progress;
+                const currentMaxHeight = startMaxHeight + (endMaxHeight - startMaxHeight) * progress;
+
+                video.style.maxWidth = currentMaxWidth + 'px';
+                video.style.maxHeight = currentMaxHeight + 'px';
+
+                if (progress >= 1) {
+                    clearInterval(zoomInterval);
+                }
+            }, 100);
         }
 
         function startBackgroundAnimation() {
