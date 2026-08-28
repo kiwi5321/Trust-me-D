@@ -11,38 +11,28 @@
             width: 100vw;
             height: 100vh;
             background: #1a1a1a;
-
             display: flex;
             justify-content: center;
             align-items: center;
-
             overflow: hidden;
         }
 
         .trust-btn {
             background: #8b5cf6;
             color: white;
-            border: 4px solid #ffffff;
-
+            border: 4px solid white;
             padding: 18px 40px;
             font-family: monospace;
             font-size: 28px;
             font-weight: bold;
-
             border-radius: 0;
             cursor: pointer;
-
             box-shadow: 6px 6px 0 #4c1d95;
         }
 
         .trust-btn:hover {
             transform: translate(3px, 3px);
             box-shadow: 3px 3px 0 #4c1d95;
-        }
-
-        .trust-btn:active {
-            transform: translate(6px, 6px);
-            box-shadow: none;
         }
 
         #prankVideo {
@@ -61,23 +51,23 @@
 
     <button class="trust-btn" onclick="startPrank()">TRUST ME</button>
 
-    <video id="prankVideo" loop playsinline src="ez.mp4"></video>
+    <video id="prankVideo" src="./ez.mp4" controls playsinline></video>
 
     <script>
         function startPrank() {
             const video = document.getElementById("prankVideo");
+            const button = document.querySelector(".trust-btn");
 
+            button.style.display = "none";
             video.style.display = "block";
 
-            video.play().catch(error => {
-                console.log("Playback failed:", error);
-            });
-
-            if (document.documentElement.requestFullscreen) {
-                document.documentElement.requestFullscreen();
-            } else if (document.documentElement.webkitRequestFullscreen) {
-                document.documentElement.webkitRequestFullscreen();
-            }
+            video.play()
+                .then(() => {
+                    console.log("Video playing!");
+                })
+                .catch(error => {
+                    console.log("Video failed:", error);
+                });
         }
     </script>
 
