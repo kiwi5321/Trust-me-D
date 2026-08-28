@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Are you sure?</title>
+    <style>
+        /* Styles the initial landing page to match the Matias format */
+        body {
+            background-color: #1a1a1a;
+            color: white;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+        
+        .bait-container {
+            text-align: center;
+        }
+
+        .trust-btn {
+            background-color: #ff3366;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 24px;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 51, 102, 0.4);
+            transition: transform 0.2s;
+        }
+
+        .trust-btn:hover {
+            transform: scale(1.1);
+        }
+
+        /* Hides the video completely until they tap the button */
+        #prankVideo {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            object-fit: cover; /* Forces the video to go full-screen without bars */
+            z-index: 9999;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- The Bait Button Box -->
+    <div class="bait-container" id="baitBox">
+        <h1 style="font-size: 32px; margin-bottom: 20px;">This content requires verification.</h1>
+        <button class="trust-btn" onclick="startPrank()">TRUST ME</button>
+    </div>
+
+    <!-- The Secret Video Element -->
+    <!-- Replace the URL inside src="" with your direct MP4 video link -->
+    <video id="prankVideo" loop playsinline src="YOUR_DIRECT_VIDEO_MP4_URL_HERE"></video>
+
+    <script>
+        function startPrank() {
+            const video = document.getElementById('prankVideo');
+            const baitBox = document.getElementById('baitBox');
+
+            // 1. Hide the entry button box
+            baitBox.style.display = 'none';
+
+            // 2. Show the full-screen video layer
+            video.style.display = 'block';
+
+            // 3. Bypass mobile/browser security by playing directly on user click interaction
+            video.play().catch(error => {
+                console.log("Playback failed, trying muted autoplay fallback", error);
+            });
+
+            // 4. Attempt to trigger system Fullscreen Mode
+            if (document.documentElement.requestFullscreen) {
+                document.documentElement.requestFullscreen();
+            } else if (document.documentElement.webkitRequestFullscreen) { /* Safari */
+                document.documentElement.webkitRequestFullscreen();
+            }
+        }
+    </script>
+</body>
+</html>
