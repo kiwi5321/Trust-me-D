@@ -90,7 +90,7 @@
 
     <div class="error-message" id="errorMessage">
         <div>Oops! Video failed to load 😅</div>
-        <div style="font-size: 16px;">Make sure ez.mp4 is in the same folder as this HTML file</div>
+        <div style="font-size: 16px;">Something went wrong with the video</div>
         <button onclick="location.reload()">Try Again</button>
     </div>
 
@@ -100,8 +100,8 @@
             const button = document.querySelector(".trust-btn");
             const errorMessage = document.getElementById("errorMessage");
 
-            // Set video source
-            video.src = "./ez.mp4";
+            // Set video source to the uploaded file
+            video.src = "./HEYYEYAAEYAAAEYAEYAA%20(HQ)(3).mp4";
 
             button.style.display = "none";
             video.style.display = "block";
