@@ -62,7 +62,7 @@
 
     <!-- The Secret Video Element -->
     <!-- Replace the URL inside src="" with your direct MP4 video link -->
-    <video id="prankVideo" loop playsinline src="HEYYEYAAEYAAAEYAEYAA (HQ).mp4"></video>
+    <video id="prankVideo" loop playsinline src="ez.mp4"></video>
 
     <script>
         function startPrank() {
