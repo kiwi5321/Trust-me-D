@@ -33,24 +33,12 @@
             overflow: hidden;
         }
 
-        .floating-text {
-            position: absolute;
-            white-space: nowrap;
-            font-family: 'Courier New', monospace;
-            font-size: 18px;
-            color: #8b5cf6;
-            opacity: 0.6;
-            user-select: none;
-        }
-
-        #dancingCharacter {
+        .ascii-character {
             position: absolute;
             font-family: 'Courier New', monospace;
-            font-size: 20px;
-            color: #8b5cf6;
             white-space: pre;
-            z-index: 2;
-            line-height: 1.2;
+            user-select: none;
+            line-height: 1.1;
         }
 
         #buttonContainer {
@@ -92,8 +80,6 @@
             transform: translate(-50%, -50%);
             z-index: 50;
             display: none;
-            max-width: 90vw;
-            max-height: 90vh;
         }
 
         #prankVideo {
@@ -103,8 +89,9 @@
             max-height: 360px;
             aspect-ratio: 16 / 9;
             display: block;
-            border: 4px solid #8b5cf6;
-            box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+            border: 3px solid #8b5cf6;
+            border-radius: 4px;
+            box-shadow: 0 0 15px rgba(139, 92, 246, 0.4);
         }
 
         @media (max-width: 768px) {
@@ -126,8 +113,6 @@
 
     <div id="backgroundLayer"></div>
 
-    <div id="dancingCharacter"></div>
-
     <div id="buttonContainer">
         <button class="trust-btn" onclick="startPrank()">TRUST ME</button>
     </div>
@@ -139,43 +124,138 @@
     </div>
 
     <script>
-        const floatingTexts = [
+        const floatingPhrases = [
             'HEYYEYAAEYAAAEYAEYAA',
             "What's going on?",
             '┌( ಠ_ಠ )┘',
-            '╰(°∇≦*)╮',
-            'bruh',
-            'WHAT',
-            'why',
-            'hello???',
-            'ಠ_ಠ',
-            '(•_•)',
-            '(╯°□°）╯︵ ┻━┻',
-            '┬─┬ ノ( ゜-゜ノ)',
-            'sus',
-            '???',
-            'lol',
-            'XD',
-            '(´ ▽`)',
-            '(°_°)',
-            'WAIT',
-            'NO'
+            '╰(°∇≦*)╮'
         ];
 
-        const dancingFrames = [
-            '  O\n /|\\\n / \\',
-            ' \\O\n  |\\\n / \\',
-            '  O/\n  |\n / \\',
-            'O\n/|\\\n / \\',
-            '  O\n /|\\\n/ \\',
-            '  O\n /|\\\n \\ /',
-            ' O/\n ||\n/ \\',
-            '  O\n /|\\\n / \\'
+        const asciiDancers = [
+            {
+                name: 'dancer1',
+                frames: [
+                    '  O\n /|\\\n / \\',
+                    '  O\n /|\\\n/ \\',
+                    '  O\n /|\\\n \\ /',
+                    '  O\n ||\\\n/ \\'
+                ],
+                color: '#a8dadc'
+            },
+            {
+                name: 'dancer2',
+                frames: [
+                    ' ┌( ಠ_ಠ )┘',
+                    ' └( ಠ_ಠ )┐',
+                    ' ┌( ಠ_ಠ )┘',
+                    ' └( ಠ_ಠ )┐'
+                ],
+                color: '#b8e0d2'
+            },
+            {
+                name: 'dancer3',
+                frames: [
+                    '╰(°∇≦*)╮',
+                    '╭(°∇≦*)╰',
+                    '╰(°∇≦*)╮',
+                    '╭(°∇≦*)╰'
+                ],
+                color: '#d4c5f9'
+            },
+            {
+                name: 'dancer4',
+                frames: [
+                    '└(°д°)┐',
+                    '┌(°д°)┘',
+                    '└(°д°)┐',
+                    '┌(°д°)┘'
+                ],
+                color: '#95b8d1'
+            },
+            {
+                name: 'dancer5',
+                frames: [
+                    'ヽ(°◇° )ノ',
+                    'ヽ( °◇°)ノ',
+                    'ヽ(°◇° )ノ',
+                    'ヽ( °◇°)ノ'
+                ],
+                color: '#b5ead7'
+            },
+            {
+                name: 'dancer6',
+                frames: [
+                    ' O/\n/|\n/ \\',
+                    'O\n||\n/ \\',
+                    '\\O\n||\\n\\ /',
+                    ' O\n/|\\\n\\ /'
+                ],
+                color: '#ffdac1'
+            },
+            {
+                name: 'dancer7',
+                frames: [
+                    '(ง •̀_•́)ง',
+                    '(ง •́_•̀)ง',
+                    '(ง •̀_•́)ง',
+                    '(ง •́_•̀)ง'
+                ],
+                color: '#e0aaff'
+            },
+            {
+                name: 'dancer8',
+                frames: [
+                    '(ノಠ益ಠ)ノ',
+                    'ヽ(ಠ益ಠ)ノ',
+                    '(ノಠ益ಠ)ノ',
+                    'ヽ(ಠ益ಠ)ノ'
+                ],
+                color: '#c7ceea'
+            },
+            {
+                name: 'dancer9',
+                frames: [
+                    '¯\\_(ツ)_/¯',
+                    '_¯(ツ)¯_',
+                    '¯\\_(ツ)_/¯',
+                    '_¯(ツ)¯_'
+                ],
+                color: '#ffc8dd'
+            },
+            {
+                name: 'dancer10',
+                frames: [
+                    '(づ｡◕‿‿◕｡)づ',
+                    '(づ｡◕‿◕｡)づ',
+                    '(づ｡◕‿‿◕｡)づ',
+                    '(づ｡◕‿◕｡)づ'
+                ],
+                color: '#caffbf'
+            },
+            {
+                name: 'dancer11',
+                frames: [
+                    ' \\ O /\n  ||\n / \\',
+                    ' / O \\\n  ||\n \\ /',
+                    ' \\ O /\n  ||\n / \\'
+                ],
+                color: '#9bf6ff'
+            },
+            {
+                name: 'dancer12',
+                frames: [
+                    '┌(・o・)┐',
+                    '└(・o・)┘',
+                    '┌(・o・)┐',
+                    '└(・o・)┘'
+                ],
+                color: '#bdb2ff'
+            }
         ];
 
-        let frameIndex = 0;
-        let activeFloatingElements = [];
-        const maxFloatingElements = 15;
+        let activeCharacters = [];
+        const maxCharacters = 25;
+        let animationRunning = false;
 
         function startPrank() {
             document.getElementById('buttonContainer').style.display = 'none';
@@ -184,112 +264,191 @@
             video.play().catch(error => {
                 console.error('Playback failed:', error);
             });
+            animationRunning = true;
             startBackgroundAnimation();
         }
 
         function startBackgroundAnimation() {
-            setInterval(spawnFloatingText, 800);
-            setInterval(updateDancingCharacter, 200);
-            moveDancingCharacter();
+            spawnCharacter();
+            setInterval(() => {
+                if (activeCharacters.length < maxCharacters && animationRunning) {
+                    spawnCharacter();
+                }
+            }, 600);
+
+            let lastPhraseTime = 0;
+            setInterval(() => {
+                if (Math.random() < 0.3 && activeCharacters.length < maxCharacters && animationRunning) {
+                    const now = Date.now();
+                    if (now - lastPhraseTime > 3000) {
+                        spawnPhrase();
+                        lastPhraseTime = now;
+                    }
+                }
+            }, 1000);
+
+            updateAnimation();
         }
 
-        function spawnFloatingText() {
-            if (activeFloatingElements.length >= maxFloatingElements) {
-                const oldElement = activeFloatingElements.shift();
-                oldElement.remove();
-            }
-
-            const text = floatingTexts[Math.floor(Math.random() * floatingTexts.length)];
+        function spawnCharacter() {
+            const dancer = asciiDancers[Math.floor(Math.random() * asciiDancers.length)];
             const element = document.createElement('div');
-            element.className = 'floating-text';
-            element.textContent = text;
+            element.className = 'ascii-character';
+            element.style.color = dancer.color;
+            element.style.fontSize = (12 + Math.random() * 8) + 'px';
+            element.style.opacity = 0.5 + Math.random() * 0.5;
 
             const startX = Math.random() * window.innerWidth;
             const startY = Math.random() * window.innerHeight;
             element.style.left = startX + 'px';
             element.style.top = startY + 'px';
 
-            const opacity = 0.3 + Math.random() * 0.4;
-            element.style.opacity = opacity;
+            document.getElementById('backgroundLayer').appendChild(element);
 
-            const fontSize = 14 + Math.random() * 24;
-            element.style.fontSize = fontSize + 'px';
+            const angle = Math.random() * Math.PI * 2;
+            const speed = 0.5 + Math.random() * 1.5;
+            
+            let movementType = Math.floor(Math.random() * 7);
+            let extraData = {};
 
-            const rotation = Math.random() * 45 - 22.5;
-            element.style.transform = `rotate(${rotation}deg)`;
+            if (movementType === 6) {
+                extraData.centerX = window.innerWidth * 0.5;
+                extraData.centerY = window.innerHeight * 0.5;
+                extraData.radius = 50 + Math.random() * 100;
+                extraData.angle = Math.random() * Math.PI * 2;
+            }
+
+            const character = {
+                element: element,
+                dancer: dancer,
+                x: startX,
+                y: startY,
+                vx: Math.cos(angle) * speed,
+                vy: Math.sin(angle) * speed,
+                frameIndex: 0,
+                frameTimer: 0,
+                frameInterval: 200 + Math.random() * 300,
+                movementType: movementType,
+                speed: speed,
+                extraData: extraData
+            };
+
+            activeCharacters.push(character);
+        }
+
+        function spawnPhrase() {
+            const phrase = floatingPhrases[Math.floor(Math.random() * floatingPhrases.length)];
+            const element = document.createElement('div');
+            element.className = 'ascii-character';
+            element.style.color = '#a8dadc';
+            element.style.fontSize = (14 + Math.random() * 6) + 'px';
+            element.style.opacity = 0.4 + Math.random() * 0.3;
+
+            const startX = Math.random() * window.innerWidth;
+            const startY = Math.random() * window.innerHeight;
+            element.style.left = startX + 'px';
+            element.style.top = startY + 'px';
+            element.textContent = phrase;
 
             document.getElementById('backgroundLayer').appendChild(element);
 
             const angle = Math.random() * Math.PI * 2;
-            const speed = 1 + Math.random() * 3;
-            const vx = Math.cos(angle) * speed;
-            const vy = Math.sin(angle) * speed;
+            const speed = 0.3 + Math.random() * 0.8;
 
-            const data = {
+            const character = {
                 element: element,
                 x: startX,
                 y: startY,
-                vx: vx,
-                vy: vy
+                vx: Math.cos(angle) * speed,
+                vy: Math.sin(angle) * speed,
+                isPhrase: true,
+                lifetime: 15000
             };
 
-            activeFloatingElements.push(data);
+            activeCharacters.push(character);
         }
 
-        function updateFloatingPosition() {
-            const padding = 100;
+        function updateAnimation() {
+            const padding = 150;
             const toRemove = [];
 
-            for (let i = 0; i < activeFloatingElements.length; i++) {
-                const data = activeFloatingElements[i];
-                data.x += data.vx;
-                data.y += data.vy;
+            for (let i = 0; i < activeCharacters.length; i++) {
+                const char = activeCharacters[i];
 
-                data.element.style.left = data.x + 'px';
-                data.element.style.top = data.y + 'px';
+                if (char.isPhrase) {
+                    char.lifetime -= 16;
+                    if (char.lifetime <= 0) {
+                        char.element.remove();
+                        toRemove.push(i);
+                        continue;
+                    }
+                } else {
+                    char.frameTimer += 16;
+                    if (char.frameTimer >= char.frameInterval) {
+                        char.frameIndex = (char.frameIndex + 1) % char.dancer.frames.length;
+                        char.element.textContent = char.dancer.frames[char.frameIndex];
+                        char.frameTimer = 0;
+                    }
 
-                if (data.x < -padding || data.x > window.innerWidth + padding ||
-                    data.y < -padding || data.y > window.innerHeight + padding) {
-                    data.element.remove();
-                    toRemove.push(i);
+                    if (char.movementType === 0) {
+                        char.x += char.vx;
+                        char.y += char.vy;
+                    } else if (char.movementType === 1) {
+                        char.y += char.speed;
+                        if (Math.random() < 0.02) {
+                            char.vx = (Math.random() - 0.5) * 2;
+                        }
+                        char.x += char.vx * 0.5;
+                    } else if (char.movementType === 2) {
+                        char.x += char.speed;
+                        if (Math.random() < 0.03) {
+                            char.vy = (Math.random() - 0.5) * 1.5;
+                        }
+                        char.y += char.vy;
+                    } else if (char.movementType === 3) {
+                        char.x += Math.sin(Date.now() * 0.002) * 2;
+                        char.y += char.speed * 0.5;
+                    } else if (char.movementType === 4) {
+                        if (Math.random() < 0.05) {
+                            char.vx = (Math.random() - 0.5) * 3;
+                            char.vy = (Math.random() - 0.5) * 3;
+                        }
+                        char.x += char.vx;
+                        char.y += char.vy;
+                    } else if (char.movementType === 5) {
+                        char.x += char.vx;
+                        char.y += char.vy;
+                        if (char.vy < 2) char.vy += 0.1;
+                        if (char.y > window.innerHeight) {
+                            char.vy = -Math.random() * 3;
+                            char.y = window.innerHeight;
+                        }
+                    } else if (char.movementType === 6) {
+                        char.extraData.angle += 0.05;
+                        char.x = char.extraData.centerX + Math.cos(char.extraData.angle) * char.extraData.radius;
+                        char.y = char.extraData.centerY + Math.sin(char.extraData.angle) * char.extraData.radius;
+                    }
+
+                    if (char.x < -padding || char.x > window.innerWidth + padding ||
+                        char.y < -padding || char.y > window.innerHeight + padding) {
+                        char.element.remove();
+                        toRemove.push(i);
+                        continue;
+                    }
                 }
+
+                char.element.style.left = char.x + 'px';
+                char.element.style.top = char.y + 'px';
             }
 
             for (let i = toRemove.length - 1; i >= 0; i--) {
-                activeFloatingElements.splice(toRemove[i], 1);
+                activeCharacters.splice(toRemove[i], 1);
+            }
+
+            if (animationRunning) {
+                requestAnimationFrame(updateAnimation);
             }
         }
-
-        function updateDancingCharacter() {
-            const character = document.getElementById('dancingCharacter');
-            character.textContent = dancingFrames[frameIndex];
-            frameIndex = (frameIndex + 1) % dancingFrames.length;
-        }
-
-        function moveDancingCharacter() {
-            const character = document.getElementById('dancingCharacter');
-            let x = window.innerWidth * 0.15;
-            let y = window.innerHeight * 0.2;
-            let dirX = 1;
-            let dirY = 1;
-
-            setInterval(() => {
-                x += dirX * 2;
-                y += dirY * 2;
-
-                if (x < window.innerWidth * 0.05 || x > window.innerWidth * 0.25) {
-                    dirX *= -1;
-                }
-                if (y < window.innerHeight * 0.1 || y > window.innerHeight * 0.4) {
-                    dirY *= -1;
-                }
-
-                character.style.left = x + 'px';
-                character.style.top = y + 'px';
-            }, 300);
-        }
-
-        setInterval(updateFloatingPosition, 30);
     </script>
 
 </body>
