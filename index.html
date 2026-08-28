@@ -12,7 +12,7 @@
         }
 
         body {
-            width: 100vw;
+            width: 100%;
             height: 100vh;
             background: #1a1a1a;
             display: flex;
@@ -51,9 +51,6 @@
             font-family: 'Courier New', monospace;
             white-space: nowrap;
             user-select: none;
-            font-size: 24px;
-            font-weight: bold;
-            color: #ff6b6b;
             opacity: 0.7;
             z-index: 2;
         }
@@ -64,20 +61,23 @@
             left: 50%;
             transform: translate(-50%, -50%);
             z-index: 100;
+            padding: 20px;
         }
 
         .trust-btn {
             background: #8b5cf6;
             color: white;
             border: 4px solid white;
-            padding: 18px 40px;
+            padding: clamp(12px, 4vw, 18px) clamp(24px, 8vw, 40px);
             font-family: 'Courier New', monospace;
-            font-size: 28px;
+            font-size: clamp(18px, 5vw, 28px);
             font-weight: bold;
             border-radius: 0;
             cursor: pointer;
             box-shadow: 6px 6px 0 #4c1d95;
             transition: all 0.1s ease;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
         }
 
         .trust-btn:hover {
@@ -97,6 +97,9 @@
             z-index: 50;
             display: none;
             filter: drop-shadow(0 0 20px rgba(139, 92, 246, 0.6));
+            padding: 10px;
+            max-width: 95vw;
+            max-height: 95vh;
         }
 
         #prankVideo {
@@ -106,6 +109,60 @@
             display: block;
             border: 3px solid #8b5cf6;
             border-radius: 4px;
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        #endScreen {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 100;
+            display: none;
+            text-align: center;
+            background: rgba(26, 26, 26, 0.95);
+            padding: 40px;
+            border: 3px solid #8b5cf6;
+            border-radius: 4px;
+            max-width: 90vw;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -50%) scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+
+        #endScreen h1 {
+            font-size: clamp(24px, 8vw, 48px);
+            color: #ffd93d;
+            margin-bottom: 30px;
+            text-shadow: 0 0 10px rgba(255, 217, 61, 0.5);
+        }
+
+        #cookieArt {
+            font-family: 'Courier New', monospace;
+            color: #d4a574;
+            font-size: clamp(12px, 3vw, 20px);
+            white-space: pre;
+            margin: 30px 0;
+            line-height: 1.2;
+            text-shadow: 0 0 10px rgba(212, 165, 116, 0.3);
+        }
+
+        #endScreen p {
+            font-size: clamp(16px, 4vw, 24px);
+            color: #a8dadc;
+            margin-top: 30px;
         }
 
         #colorBeat {
@@ -119,6 +176,44 @@
             display: none;
             background-color: transparent;
             transition: background-color 0.1s ease;
+        }
+
+        /* Mobile-specific optimizations */
+        @media (max-width: 768px) {
+            .floating-text {
+                font-size: clamp(14px, 4vw, 18px);
+            }
+
+            .ascii-character {
+                font-size: clamp(10px, 3vw, 14px) !important;
+            }
+
+            #endScreen {
+                padding: 20px;
+            }
+
+            body {
+                overflow-y: auto;
+            }
+        }
+
+        @media (max-width: 480px) {
+            #buttonContainer {
+                padding: 10px;
+            }
+
+            .trust-btn {
+                min-width: 200px;
+            }
+
+            .floating-text {
+                font-size: clamp(12px, 3vw, 16px);
+            }
+
+            #endScreen {
+                padding: 15px;
+                border: 2px solid #8b5cf6;
+            }
         }
     </style>
 </head>
@@ -137,7 +232,33 @@
         </video>
     </div>
 
+    <div id="endScreen">
+        <h1>You watched till the end!</h1>
+        <div id="cookieArt"></div>
+        <p>Have a cookie 🍪</p>
+    </div>
+
     <script>
+        // Big ASCII Cookie Art
+        const cookieASCII = `
+    ooOOOOOOOOOOOoo
+   oO             Oo
+  oO      ███      Oo
+ oO      ███████      Oo
+oO      █████████      Oo
+o      ███████████      o
+o     ███ ● ███ ●      o
+o      ███████████      o
+oO      █████████      Oo
+ oO      ███████      Oo
+  oO      ███      Oo
+   oO             Oo
+    ooOOOOOOOOOOOoo
+        `;
+
+        // Detect if mobile
+        const isMobile = () => window.innerWidth <= 768;
+
         const floatingPhrases = [
             'HEYYEYAAEYAAAEYAEYAA',
             "What's going on?",
@@ -290,12 +411,23 @@
         ];
 
         let activeCharacters = [];
-        const maxCharacters = 25;
+        const maxCharacters = isMobile() ? 12 : 25;
         let animationRunning = false;
         let shakeIntensity = 0;
         let audioContext;
         let analyser;
         let dataArray;
+
+        function showEndScreen() {
+            animationRunning = false;
+            document.getElementById('videoContainer').style.display = 'none';
+            document.getElementById('endScreen').style.display = 'block';
+            document.getElementById('cookieArt').textContent = cookieASCII;
+            
+            // Continue background animation
+            animationRunning = true;
+            startBackgroundAnimation();
+        }
 
         function startPrank() {
             document.getElementById('buttonContainer').style.display = 'none';
@@ -309,6 +441,9 @@
             startVideoZoom(video);
             startScreenEffects();
             initAudioContext(video);
+
+            // Listen for video end
+            video.addEventListener('ended', showEndScreen, { once: true });
         }
 
         function initAudioContext(video) {
@@ -393,10 +528,13 @@
         }
 
         function startScreenEffects() {
-            // Screen shake
+            const shakeFrequency = isMobile() ? 500 : 300;
+            const colorShiftFrequency = isMobile() ? 1200 : 800;
+            const floatingTextFrequency = isMobile() ? 2500 : 1500;
+
             setInterval(() => {
-                if (animationRunning && Math.random() < 0.3) {
-                    shakeIntensity = 2 + Math.random() * 3;
+                if (animationRunning && Math.random() < (isMobile() ? 0.15 : 0.3)) {
+                    shakeIntensity = isMobile() ? 1 + Math.random() * 1.5 : 2 + Math.random() * 3;
                     const shakeX = (Math.random() - 0.5) * shakeIntensity;
                     const shakeY = (Math.random() - 0.5) * shakeIntensity;
                     document.body.style.transform = `translate(${shakeX}px, ${shakeY}px)`;
@@ -405,9 +543,8 @@
                         document.body.style.transform = 'translate(0, 0)';
                     }, 50);
                 }
-            }, 300);
+            }, shakeFrequency);
 
-            // Color shifts
             const colorShifts = ['#1a1a1a', '#2a1a2a', '#1a2a2a', '#2a2a1a', '#2a1a1a'];
             setInterval(() => {
                 if (animationRunning && Math.random() < 0.2) {
@@ -417,14 +554,13 @@
                         document.body.style.backgroundColor = '#1a1a1a';
                     }, 200);
                 }
-            }, 800);
+            }, colorShiftFrequency);
 
-            // Random floating text
             setInterval(() => {
-                if (animationRunning && Math.random() < 0.4) {
+                if (animationRunning && Math.random() < (isMobile() ? 0.2 : 0.4)) {
                     spawnFloatingText();
                 }
-            }, 1500);
+            }, floatingTextFrequency);
         }
 
         function spawnFloatingText() {
@@ -435,7 +571,7 @@
             element.style.left = Math.random() * window.innerWidth + 'px';
             element.style.top = Math.random() * window.innerHeight + 'px';
             element.style.color = ['#ff6b6b', '#ffd93d', '#6bcf7f', '#4d96ff'][Math.floor(Math.random() * 4)];
-            element.style.fontSize = (20 + Math.random() * 20) + 'px';
+            element.style.fontSize = isMobile() ? (12 + Math.random() * 10) + 'px' : (20 + Math.random() * 20) + 'px';
             element.style.transform = `rotate(${Math.random() * 360}deg)`;
 
             document.getElementById('backgroundLayer').appendChild(element);
@@ -446,10 +582,10 @@
         }
 
         function startVideoZoom(video) {
-            const startWidth = 640;
-            const endWidth = window.innerWidth * 1.2;
-            const startHeight = 360;
-            const endHeight = window.innerHeight * 1.2;
+            const startWidth = isMobile() ? 320 : 640;
+            const endWidth = window.innerWidth * (isMobile() ? 1.1 : 1.2);
+            const startHeight = isMobile() ? 180 : 360;
+            const endHeight = window.innerHeight * (isMobile() ? 1.1 : 1.2);
 
             const updateZoom = () => {
                 const currentTime = video.currentTime;
@@ -461,8 +597,7 @@
                     const currentWidth = startWidth + (endWidth - startWidth) * progress;
                     const currentHeight = startHeight + (endHeight - startHeight) * progress;
                     
-                    // Zoom blur effect
-                    const blur = progress * 3;
+                    const blur = isMobile() ? progress * 1.5 : progress * 3;
                     
                     const videoContainer = document.getElementById('videoContainer');
                     videoContainer.style.filter = `drop-shadow(0 0 ${20 + blur * 5}px rgba(139, 92, 246, 0.6)) blur(${blur * 0.1}px)`;
@@ -488,15 +623,16 @@
 
         function startBackgroundAnimation() {
             spawnCharacter();
+            const spawnInterval = isMobile() ? 1200 : 600;
             setInterval(() => {
                 if (activeCharacters.length < maxCharacters && animationRunning) {
                     spawnCharacter();
                 }
-            }, 600);
+            }, spawnInterval);
 
             let lastPhraseTime = 0;
             setInterval(() => {
-                if (Math.random() < 0.3 && activeCharacters.length < maxCharacters && animationRunning) {
+                if (Math.random() < (isMobile() ? 0.15 : 0.3) && activeCharacters.length < maxCharacters && animationRunning) {
                     const now = Date.now();
                     if (now - lastPhraseTime > 3000) {
                         spawnPhrase();
@@ -505,12 +641,12 @@
                 }
             }, 1000);
 
-            // Spawn extra emoji characters
+            const emojiInterval = isMobile() ? 4000 : 2000;
             setInterval(() => {
-                if (Math.random() < 0.4 && animationRunning) {
+                if (Math.random() < (isMobile() ? 0.2 : 0.4) && animationRunning) {
                     spawnEmojiCharacter();
                 }
-            }, 2000);
+            }, emojiInterval);
 
             updateAnimation();
         }
@@ -521,7 +657,7 @@
             element.className = 'ascii-character';
             element.textContent = emoji;
             element.style.color = '#' + Math.floor(Math.random()*16777215).toString(16);
-            element.style.fontSize = (16 + Math.random() * 12) + 'px';
+            element.style.fontSize = isMobile() ? (12 + Math.random() * 8) + 'px' : (16 + Math.random() * 12) + 'px';
             element.style.opacity = 0.6 + Math.random() * 0.4;
 
             const startX = Math.random() * window.innerWidth;
@@ -532,7 +668,7 @@
             document.getElementById('backgroundLayer').appendChild(element);
 
             const angle = Math.random() * Math.PI * 2;
-            const speed = 0.5 + Math.random() * 2;
+            const speed = isMobile() ? 0.2 + Math.random() * 1 : 0.5 + Math.random() * 2;
 
             const character = {
                 element: element,
@@ -552,7 +688,7 @@
             const element = document.createElement('div');
             element.className = 'ascii-character';
             element.style.color = dancer.color;
-            element.style.fontSize = (12 + Math.random() * 8) + 'px';
+            element.style.fontSize = isMobile() ? (8 + Math.random() * 6) + 'px' : (12 + Math.random() * 8) + 'px';
             element.style.opacity = 0.5 + Math.random() * 0.5;
 
             const startX = Math.random() * window.innerWidth;
@@ -563,7 +699,7 @@
             document.getElementById('backgroundLayer').appendChild(element);
 
             const angle = Math.random() * Math.PI * 2;
-            const speed = 0.5 + Math.random() * 1.5;
+            const speed = isMobile() ? 0.2 + Math.random() * 0.8 : 0.5 + Math.random() * 1.5;
             
             let movementType = Math.floor(Math.random() * 7);
             let extraData = {};
@@ -598,7 +734,7 @@
             const element = document.createElement('div');
             element.className = 'ascii-character';
             element.style.color = '#a8dadc';
-            element.style.fontSize = (14 + Math.random() * 6) + 'px';
+            element.style.fontSize = isMobile() ? (10 + Math.random() * 4) + 'px' : (14 + Math.random() * 6) + 'px';
             element.style.opacity = 0.4 + Math.random() * 0.3;
 
             const startX = Math.random() * window.innerWidth;
@@ -610,7 +746,7 @@
             document.getElementById('backgroundLayer').appendChild(element);
 
             const angle = Math.random() * Math.PI * 2;
-            const speed = 0.3 + Math.random() * 0.8;
+            const speed = isMobile() ? 0.1 + Math.random() * 0.4 : 0.3 + Math.random() * 0.8;
 
             const character = {
                 element: element,
