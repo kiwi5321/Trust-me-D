@@ -108,7 +108,7 @@
             border-radius: 4px;
         }
 
-        #colorFlash {
+        #colorBeat {
             position: fixed;
             top: 0;
             left: 0;
@@ -117,13 +117,15 @@
             z-index: 2;
             pointer-events: none;
             display: none;
+            background-color: transparent;
+            transition: background-color 0.1s ease;
         }
     </style>
 </head>
 <body>
 
     <div id="backgroundLayer"></div>
-    <div id="colorFlash"></div>
+    <div id="colorBeat"></div>
 
     <div id="buttonContainer">
         <button class="trust-btn" onclick="startPrank()">TRUST ME</button>
@@ -291,6 +293,9 @@
         const maxCharacters = 25;
         let animationRunning = false;
         let shakeIntensity = 0;
+        let audioContext;
+        let analyser;
+        let dataArray;
 
         function startPrank() {
             document.getElementById('buttonContainer').style.display = 'none';
@@ -303,6 +308,88 @@
             startBackgroundAnimation();
             startVideoZoom(video);
             startScreenEffects();
+            initAudioContext(video);
+        }
+
+        function initAudioContext(video) {
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                analyser = audioContext.createAnalyser();
+                analyser.fftSize = 256;
+                
+                const source = audioContext.createMediaElementAudioSource(video);
+                source.connect(analyser);
+                analyser.connect(audioContext.destination);
+                
+                dataArray = new Uint8Array(analyser.frequencyBinCount);
+                startBeatDetection();
+            } catch (e) {
+                console.log('Audio context not supported, using fallback timing');
+                startBeatDetectionFallback();
+            }
+        }
+
+        function startBeatDetection() {
+            const beatColors = [
+                'rgba(255, 100, 100, 0.2)',
+                'rgba(100, 255, 100, 0.2)',
+                'rgba(100, 100, 255, 0.2)',
+                'rgba(255, 255, 100, 0.2)',
+                'rgba(255, 100, 255, 0.2)',
+                'rgba(100, 255, 255, 0.2)'
+            ];
+
+            const detectBeat = () => {
+                if (!animationRunning) return;
+
+                analyser.getByteFrequencyData(dataArray);
+                
+                let average = 0;
+                for (let i = 0; i < dataArray.length; i++) {
+                    average += dataArray[i];
+                }
+                average /= dataArray.length;
+
+                const beatIntensity = average / 255;
+                const colorIndex = Math.floor(beatIntensity * (beatColors.length - 1));
+                
+                const beatElement = document.getElementById('colorBeat');
+                beatElement.style.backgroundColor = beatColors[colorIndex];
+                
+                if (beatIntensity > 0.3) {
+                    beatElement.style.display = 'block';
+                } else {
+                    beatElement.style.display = 'none';
+                }
+
+                requestAnimationFrame(detectBeat);
+            };
+
+            detectBeat();
+        }
+
+        function startBeatDetectionFallback() {
+            const beatColors = [
+                'rgba(255, 100, 100, 0.2)',
+                'rgba(100, 255, 100, 0.2)',
+                'rgba(100, 100, 255, 0.2)',
+                'rgba(255, 255, 100, 0.2)',
+                'rgba(255, 100, 255, 0.2)',
+                'rgba(100, 255, 255, 0.2)'
+            ];
+
+            setInterval(() => {
+                if (animationRunning) {
+                    const colorIndex = Math.floor(Math.random() * beatColors.length);
+                    const beatElement = document.getElementById('colorBeat');
+                    beatElement.style.backgroundColor = beatColors[colorIndex];
+                    beatElement.style.display = 'block';
+
+                    setTimeout(() => {
+                        beatElement.style.display = 'none';
+                    }, 150);
+                }
+            }, 200);
         }
 
         function startScreenEffects() {
@@ -331,19 +418,6 @@
                     }, 200);
                 }
             }, 800);
-
-            // Color flashes
-            setInterval(() => {
-                if (animationRunning && Math.random() < 0.15) {
-                    const flashColors = ['rgba(255,0,0,0.1)', 'rgba(0,255,0,0.1)', 'rgba(0,0,255,0.1)', 'rgba(255,255,0,0.1)'];
-                    const flash = document.getElementById('colorFlash');
-                    flash.style.backgroundColor = flashColors[Math.floor(Math.random() * flashColors.length)];
-                    flash.style.display = 'block';
-                    setTimeout(() => {
-                        flash.style.display = 'none';
-                    }, 100);
-                }
-            }, 1000);
 
             // Random floating text
             setInterval(() => {
