@@ -1,219 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Are you sure?</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            width: 100%;
-            height: 100vh;
-            background: #1a1a1a;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            font-family: 'Courier New', monospace;
+            width: 100%; height: 100vh; background: #1a1a1a;
+            display: flex; justify-content: center; align-items: center;
+            overflow: hidden; font-family: 'Courier New', monospace;
             transition: background-color 0.1s;
         }
-
-        body.color-shift {
-            background-color: #2a1a2a;
-        }
-
+        body.color-shift { background-color: #2a1a2a; }
         #backgroundLayer {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
-            pointer-events: none;
-            overflow: hidden;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 1; pointer-events: none; overflow: hidden;
         }
-
         .ascii-character {
             position: absolute;
             font-family: 'Courier New', monospace;
             white-space: pre;
             user-select: none;
             line-height: 1.1;
+            will-change: transform, left, top;
         }
-
         .floating-text {
             position: absolute;
             font-family: 'Courier New', monospace;
             white-space: nowrap;
             user-select: none;
-            opacity: 0.7;
+            opacity: 0.9;
             z-index: 2;
+            pointer-events: none;
+            /* keep text straight and readable */
+            transform-origin: center;
         }
-
         #buttonContainer {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 100;
-            padding: 20px;
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            z-index: 100; padding: 20px;
         }
-
         .trust-btn {
-            background: #8b5cf6;
-            color: white;
-            border: 4px solid white;
+            background: #8b5cf6; color: white; border: 4px solid white;
             padding: clamp(12px, 4vw, 18px) clamp(24px, 8vw, 40px);
             font-family: 'Courier New', monospace;
-            font-size: clamp(18px, 5vw, 28px);
-            font-weight: bold;
-            border-radius: 0;
-            cursor: pointer;
-            box-shadow: 6px 6px 0 #4c1d95;
-            transition: all 0.1s ease;
-            -webkit-tap-highlight-color: transparent;
-            touch-action: manipulation;
+            font-size: clamp(18px, 5vw, 28px); font-weight: bold;
+            border-radius: 0; cursor: pointer; box-shadow: 6px 6px 0 #4c1d95;
+            transition: all 0.1s ease; -webkit-tap-highlight-color: transparent;
         }
-
-        .trust-btn:hover {
-            transform: translate(3px, 3px);
-            box-shadow: 3px 3px 0 #4c1d95;
-        }
-
-        .trust-btn:active {
-            transform: translate(6px, 6px);
-            box-shadow: 0 0 0 #4c1d95;
-        }
+        .trust-btn:hover { transform: translate(3px, 3px); box-shadow: 3px 3px 0 #4c1d95; }
+        .trust-btn:active { transform: translate(6px, 6px); box-shadow: 0 0 0 #4c1d95; }
 
         #videoContainer {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            z-index: 50;
-            display: none;
+            position: fixed; top: 50%; left: 50%; z-index: 50; display: none;
             filter: drop-shadow(0 0 20px rgba(139, 92, 246, 0.6));
-            padding: 10px;
-            max-width: 95vw;
-            max-height: 95vh;
+            padding: 10px; max-width: 95vw; max-height: 95vh;
         }
-
         #prankVideo {
-            width: 100%;
-            height: auto;
-            aspect-ratio: 16 / 9;
-            display: block;
-            border: 3px solid #8b5cf6;
-            border-radius: 4px;
-            max-width: 100%;
-            max-height: 100%;
+            width: 100%; height: auto; aspect-ratio: 16 / 9; display:block;
+            border: 3px solid #8b5cf6; border-radius: 4px; max-width: 100%; max-height: 100%;
         }
 
         #endScreen {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 100;
-            display: none;
-            text-align: center;
-            background: rgba(26, 26, 26, 0.95);
-            padding: 40px;
-            border: 3px solid #8b5cf6;
-            border-radius: 4px;
-            max-width: 90vw;
-            max-height: 90vh;
-            overflow-y: auto;
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            z-index: 100; display: none; text-align: center;
+            background: rgba(26,26,26,0.95); padding: 40px; border:3px solid #8b5cf6;
+            border-radius: 4px; max-width: 90vw; max-height: 90vh; overflow-y: auto;
             animation: slideIn 0.5s ease-out;
         }
-
         @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translate(-50%, -50%) scale(0.8);
-            }
-            to {
-                opacity: 1;
-                transform: translate(-50%, -50%) scale(1);
-            }
+            from { opacity:0; transform: translate(-50%, -50%) scale(0.8); }
+            to { opacity:1; transform: translate(-50%, -50%) scale(1); }
         }
-
-        #endScreen h1 {
-            font-size: clamp(24px, 8vw, 48px);
-            color: #ffd93d;
-            margin-bottom: 30px;
-            text-shadow: 0 0 10px rgba(255, 217, 61, 0.5);
-        }
-
-        #cookieArt {
-            font-family: 'Courier New', monospace;
-            color: #d4a574;
-            font-size: clamp(12px, 3vw, 20px);
-            white-space: pre;
-            margin: 30px 0;
-            line-height: 1.2;
-            text-shadow: 0 0 10px rgba(212, 165, 116, 0.3);
-        }
-
-        #endScreen p {
-            font-size: clamp(16px, 4vw, 24px);
-            color: #a8dadc;
-            margin-top: 30px;
-        }
+        #endScreen h1 { font-size: clamp(24px,8vw,48px); color:#ffd93d; margin-bottom:30px; text-shadow:0 0 10px rgba(255,217,61,0.5); }
+        #cookieArt { font-family:'Courier New', monospace; color:#d4a574; font-size:clamp(12px,3vw,20px); white-space:pre; margin:30px 0; line-height:1.2; text-shadow:0 0 10px rgba(212,165,116,0.3); }
+        #endScreen p { font-size:clamp(16px,4vw,24px); color:#a8dadc; margin-top:30px; }
 
         #colorBeat {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 2;
-            pointer-events: none;
-            display: none;
-            background-color: transparent;
+            position: fixed; top:0; left:0; width:100%; height:100%;
+            z-index: 2; pointer-events: none; display: none; background-color: transparent;
             transition: background-color 0.1s ease;
         }
 
-        /* Mobile-specific optimizations */
-        @media (max-width: 768px) {
-            .floating-text {
-                font-size: clamp(14px, 4vw, 18px);
-            }
-
-            .ascii-character {
-                font-size: clamp(10px, 3vw, 14px) !important;
-            }
-
-            #endScreen {
-                padding: 20px;
-            }
-
-            body {
-                overflow-y: auto;
-            }
+        /* Mobile tweaks */
+        @media (max-width:768px) {
+            .floating-text { font-size: clamp(14px,4vw,18px); }
+            .ascii-character { font-size: clamp(10px,3vw,14px) !important; }
+            #endScreen { padding: 20px; } body { overflow-y: auto; }
         }
-
-        @media (max-width: 480px) {
-            #buttonContainer {
-                padding: 10px;
-            }
-
-            .trust-btn {
-                min-width: 200px;
-            }
-
-            .floating-text {
-                font-size: clamp(12px, 3vw, 16px);
-            }
-
-            #endScreen {
-                padding: 15px;
-                border: 2px solid #8b5cf6;
-            }
+        @media (max-width:480px) {
+            #buttonContainer { padding: 10px; }
+            .trust-btn { min-width: 200px; }
+            .floating-text { font-size: clamp(12px,3vw,16px); }
+            #endScreen { padding: 15px; border:2px solid #8b5cf6; }
         }
     </style>
 </head>
@@ -274,157 +153,44 @@ oO      █████████      Oo
         ];
 
         const extraEmojis = [
-            '⊙_⊙',
-            'ಠ╭╮ಠ',
-            '(ノಠ益ಠ)ノ',
-            '(╯°□°)╯︵ ┻━┻',
-            '┬─┬ ノ( ゜-゜ノ)',
-            'ヽ༼ຈل͜ຈ༽ノ',
-            '(´・ω・`)',
-            '(´；ω；`)',
-            'щ(゜ロ゜щ)',
-            '(๑•́ ω •̀๑)',
-            'ლ(´ڡ`ლ)',
-            '(°ロ°)σ'
+            '⊙_⊙','ಠ╭╮ಠ','(ノಠ益ಠ)ノ','(╯°□°)╯︵ ┻━┻','┬─┬ ノ( ゜-゜ノ)','ヽ༼ຈل͜ຈ༽ノ',
+            '(´・ω・`)', '(´；ω；`)', 'щ(゜ロ゜щ)', '(๑•́ ω •̀๑)', 'ლ(´ڡ`ლ)', '(°ロ°)σ'
         ];
 
         const asciiDancers = [
-            {
-                name: 'dancer1',
-                frames: [
-                    '  O\n /|\\\n / \\',
-                    '  O\n /|\\\n/ \\',
-                    '  O\n /|\\\n \\ /',
-                    '  O\n ||\\\n/ \\'
-                ],
-                color: '#a8dadc'
-            },
-            {
-                name: 'dancer2',
-                frames: [
-                    ' ┌( ಠ_ಠ )┘',
-                    ' └( ಠ_ಠ )┐',
-                    ' ┌( ಠ_ಠ )┘',
-                    ' └( ಠ_ಠ )┐'
-                ],
-                color: '#b8e0d2'
-            },
-            {
-                name: 'dancer3',
-                frames: [
-                    '╰(°∇≦*)╮',
-                    '╭(°∇≦*)╰',
-                    '╰(°∇≦*)╮',
-                    '╭(°∇≦*)╰'
-                ],
-                color: '#d4c5f9'
-            },
-            {
-                name: 'dancer4',
-                frames: [
-                    '└(°д°)┐',
-                    '┌(°д°)┘',
-                    '└(°д°)┐',
-                    '┌(°д°)┘'
-                ],
-                color: '#95b8d1'
-            },
-            {
-                name: 'dancer5',
-                frames: [
-                    'ヽ(°◇° )ノ',
-                    'ヽ( °◇°)ノ',
-                    'ヽ(°◇° )ノ',
-                    'ヽ( °◇°)ノ'
-                ],
-                color: '#b5ead7'
-            },
-            {
-                name: 'dancer6',
-                frames: [
-                    ' O/\n/|\n/ \\',
-                    'O\n||\n/ \\',
-                    '\\O\n||\\n\\ /',
-                    ' O\n/|\\\n\\ /'
-                ],
-                color: '#ffdac1'
-            },
-            {
-                name: 'dancer7',
-                frames: [
-                    '(ง •̀_•́)ง',
-                    '(ง •́_•̀)ง',
-                    '(ง •̀_•́)ง',
-                    '(ง •́_•̀)ง'
-                ],
-                color: '#e0aaff'
-            },
-            {
-                name: 'dancer8',
-                frames: [
-                    '(ノಠ益ಠ)ノ',
-                    'ヽ(ಠ益ಠ)ノ',
-                    '(ノಠ益ಠ)ノ',
-                    'ヽ(ಠ益ಠ)ノ'
-                ],
-                color: '#c7ceea'
-            },
-            {
-                name: 'dancer9',
-                frames: [
-                    '¯\\_(ツ)_/¯',
-                    '_¯(ツ)¯_',
-                    '¯\\_(ツ)_/¯',
-                    '_¯(ツ)¯_'
-                ],
-                color: '#ffc8dd'
-            },
-            {
-                name: 'dancer10',
-                frames: [
-                    '(づ｡◕‿‿◕｡)づ',
-                    '(づ｡◕‿◕｡)づ',
-                    '(づ｡◕‿‿◕｡)づ',
-                    '(づ｡◕‿◕｡)づ'
-                ],
-                color: '#caffbf'
-            },
-            {
-                name: 'dancer11',
-                frames: [
-                    ' \\ O /\n  ||\n / \\',
-                    ' / O \\\n  ||\n \\ /',
-                    ' \\ O /\n  ||\n / \\'
-                ],
-                color: '#9bf6ff'
-            },
-            {
-                name: 'dancer12',
-                frames: [
-                    '┌(・o・)┐',
-                    '└(・o・)┘',
-                    '┌(・o・)┐',
-                    '└(・o・)┘'
-                ],
-                color: '#bdb2ff'
-            }
+            { name:'dancer1', frames:['  O\n /|\\\n / \\','  O\n /|\\\n/ \\','  O\n /|\\\n \\ /','  O\n ||\\\n/ \\'], color:'#a8dadc' },
+            { name:'dancer2', frames:[' ┌( ಠ_ಠ )┘',' └( ಠ_ಠ )┐',' ┌( ಠ_ಠ )┘',' └( ಠ_ಠ )┐'], color:'#b8e0d2' },
+            { name:'dancer3', frames:['╰(°∇≦*)╮','╭(°∇≦*)╰','╰(°∇≦*)╮','╭(°∇≦*)╰'], color:'#d4c5f9' },
+            { name:'dancer4', frames:['└(°д°)┐','┌(°д°)┘','└(°д°)┐','┌(°д°)┘'], color:'#95b8d1' },
+            { name:'dancer5', frames:['ヽ(°◇° )ノ','ヽ( °◇°)ノ','ヽ(°◇° )ノ','ヽ( °◇°)ノ'], color:'#b5ead7' },
+            { name:'dancer6', frames:[' O/\\n/|\\n/ \\\\','O\\n||\\n/ \\\\','\\\\O\\n||\\\\n\\\\ /',' O\\n/|\\\\n\\\\ /'], color:'#ffdac1' },
+            { name:'dancer7', frames:['(ง •̀_•́)ง','(ง •́_•̀)ง','(ง •̀_•́)ง','(ง •́_•̀)ง'], color:'#e0aaff' },
+            { name:'dancer8', frames:['(ノಠ益ಠ)ノ','ヽ(ಠ益ಠ)ノ','(ノಠ益ಠ)ノ','ヽ(ಠ益ಠ)ノ'], color:'#c7ceea' },
+            { name:'dancer9', frames:['¯\\\\_(ツ)_/¯','_¯(ツ)¯_','¯\\\\_(ツ)_/¯','_¯(ツ)¯_'], color:'#ffc8dd' },
+            { name:'dancer10', frames:['(づ｡◕‿‿◕｡)づ','(づ｡◕‿◕｡)づ','(づ｡◕‿‿◕｡)づ','(づ｡◕‿◕｡)づ'], color:'#caffbf' },
+            { name:'dancer11', frames:[' \\\\ O /\\n  ||\\n / \\\\',' / O \\\\n  ||\\n \\\\ /',' \\\\ O /\\n  ||\\n / \\\\'], color:'#9bf6ff' },
+            { name:'dancer12', frames:['┌(・o・)┐','└(・o・)┘','┌(・o・)┐','└(・o・)┘'], color:'#bdb2ff' }
         ];
 
         let activeCharacters = [];
         const maxCharacters = isMobile() ? 12 : 25;
         let animationRunning = false;
-        let shakeIntensity = 0;
         let audioContext;
         let analyser;
         let dataArray;
+
+        // chorus/peak detection state
+        let chorusDetected = false;
+        let peakTimes = [];
+        let lastPeakTime = 0;
+        let beatIntensity = 0;
 
         function showEndScreen() {
             animationRunning = false;
             document.getElementById('videoContainer').style.display = 'none';
             document.getElementById('endScreen').style.display = 'block';
             document.getElementById('cookieArt').textContent = cookieASCII;
-            
-            // Continue background animation
+            // Continue background animation a little
             animationRunning = true;
             startBackgroundAnimation();
         }
@@ -450,81 +216,117 @@ oO      █████████      Oo
             try {
                 audioContext = new (window.AudioContext || window.webkitAudioContext)();
                 analyser = audioContext.createAnalyser();
-                analyser.fftSize = 256;
-                
+                analyser.fftSize = 1024;
                 const source = audioContext.createMediaElementAudioSource(video);
                 source.connect(analyser);
                 analyser.connect(audioContext.destination);
-                
                 dataArray = new Uint8Array(analyser.frequencyBinCount);
                 startBeatDetection();
             } catch (e) {
-                console.log('Audio context not supported, using fallback timing');
+                console.log('Audio context not supported, using fallback timing', e);
                 startBeatDetectionFallback();
             }
         }
 
+        // Better beat/onset detection and chorus recognition (lightweight)
         function startBeatDetection() {
-            const beatColors = [
-                'rgba(255, 100, 100, 0.2)',
-                'rgba(100, 255, 100, 0.2)',
-                'rgba(100, 100, 255, 0.2)',
-                'rgba(255, 255, 100, 0.2)',
-                'rgba(255, 100, 255, 0.2)',
-                'rgba(100, 255, 255, 0.2)'
-            ];
+            const smoothing = 0.9;
+            let runningAvg = 0;
+            const now = () => (performance || Date).now();
 
-            const detectBeat = () => {
+            function detect() {
                 if (!animationRunning) return;
 
                 analyser.getByteFrequencyData(dataArray);
-                
-                let average = 0;
-                for (let i = 0; i < dataArray.length; i++) {
-                    average += dataArray[i];
-                }
-                average /= dataArray.length;
+                // compute energy
+                let sum = 0;
+                for (let i = 0; i < dataArray.length; i++) sum += dataArray[i];
+                const instant = sum / dataArray.length / 255; // 0..1
 
-                const beatIntensity = average / 255;
-                const colorIndex = Math.floor(beatIntensity * (beatColors.length - 1));
-                
+                // running average to normalize
+                runningAvg = smoothing * runningAvg + (1 - smoothing) * instant;
+                const diff = Math.max(0, instant - runningAvg);
+                // map intensity
+                beatIntensity = Math.min(1, (instant * 1.4));
+
+                const t = now();
+                // a "peak" when diff exceeds a threshold
+                const PEAK_THRESHOLD = 0.08; // tweak: sensitivity
+                const MIN_PEAK_GAP = 100; // ms
+
+                if (diff > PEAK_THRESHOLD && t - lastPeakTime > MIN_PEAK_GAP) {
+                    lastPeakTime = t;
+                    peakTimes.push(t);
+                    // keep last 3-4 seconds
+                    const cutoff = t - 3000;
+                    peakTimes = peakTimes.filter(ts => ts >= cutoff);
+
+                    // detect short train of peaks (the repeated "HEY" pattern)
+                    if (!chorusDetected) {
+                        // require at least 4 peaks within ~1.5s (adjustable)
+                        if (peakTimes.length >= 4) {
+                            const span = peakTimes[peakTimes.length - 1] - peakTimes[0];
+                            const avgInterval = span / (peakTimes.length - 1);
+                            if (span < 1800 && avgInterval > 80 && avgInterval < 500) {
+                                chorusDetected = true;
+                                onChorusStart();
+                            }
+                        }
+                    }
+                }
+
+                // color beat UI
                 const beatElement = document.getElementById('colorBeat');
+                const beatColors = [
+                    'rgba(255, 100, 100, 0.18)',
+                    'rgba(100, 255, 100, 0.18)',
+                    'rgba(100, 100, 255, 0.18)',
+                    'rgba(255, 255, 100, 0.18)',
+                    'rgba(255, 100, 255, 0.18)',
+                    'rgba(100, 255, 255, 0.18)'
+                ];
+                const colorIndex = Math.floor(beatIntensity * (beatColors.length - 1));
                 beatElement.style.backgroundColor = beatColors[colorIndex];
-                
-                if (beatIntensity > 0.3) {
-                    beatElement.style.display = 'block';
-                } else {
-                    beatElement.style.display = 'none';
-                }
+                beatElement.style.display = beatIntensity > 0.12 ? 'block' : 'none';
 
-                requestAnimationFrame(detectBeat);
-            };
+                requestAnimationFrame(detect);
+            }
 
-            detectBeat();
+            detect();
         }
 
         function startBeatDetectionFallback() {
-            const beatColors = [
-                'rgba(255, 100, 100, 0.2)',
-                'rgba(100, 255, 100, 0.2)',
-                'rgba(100, 100, 255, 0.2)',
-                'rgba(255, 255, 100, 0.2)',
-                'rgba(255, 100, 255, 0.2)',
-                'rgba(100, 255, 255, 0.2)'
-            ];
-
             setInterval(() => {
                 if (animationRunning) {
-                    const colorIndex = Math.floor(Math.random() * beatColors.length);
+                    beatIntensity = Math.random() * 0.8;
                     const beatElement = document.getElementById('colorBeat');
-                    beatElement.style.backgroundColor = beatColors[colorIndex];
+                    beatElement.style.backgroundColor = `rgba(${Math.floor(255*beatIntensity)},${Math.floor(255*(1-beatIntensity))},150,0.18)`;
                     beatElement.style.display = 'block';
-
-                    setTimeout(() => {
-                        beatElement.style.display = 'none';
-                    }, 150);
+                    setTimeout(() => beatElement.style.display = 'none', 120);
+                    // allow fallback to trigger chorus randomly
+                    if (!chorusDetected && Math.random() < 0.08) {
+                        chorusDetected = true; onChorusStart();
+                    }
                 }
-            }, 200);
+            }, 240);
+        }
+
+        function onChorusStart() {
+            // When chorus detected, spawn some extra characters in ordered manner,
+            // and mark existing ones for sync-to-beat movement.
+            // spawn a denser group
+            for (let i = 0; i < (isMobile() ? 7 : 14); i++) {
+                setTimeout(spawnCharacter, i * 120);
+            }
+            // mark active characters to sync
+            activeCharacters.forEach(ch => { ch.sync = true; ch.baseY = ch.y; ch.offset = Math.random() * 1000;});
+            // gradually reset after a while
+            setTimeout(() => {
+                chorusDetected = false;
+                // allow characters to revert to less-intense behavior
+                activeCharacters.forEach(ch => { ch.sync = false; });
+                peakTimes = [];
+            }, 10000); // chorus window (10s) - tweak if needed
         }
 
         function startScreenEffects() {
@@ -533,119 +335,101 @@ oO      █████████      Oo
             const floatingTextFrequency = isMobile() ? 2500 : 1500;
 
             setInterval(() => {
-                if (animationRunning && Math.random() < (isMobile() ? 0.15 : 0.3)) {
-                    shakeIntensity = isMobile() ? 1 + Math.random() * 1.5 : 2 + Math.random() * 3;
+                if (animationRunning && Math.random() < (isMobile() ? 0.08 : 0.12)) {
+                    // small touch-of-shake only occasionally
+                    const shakeIntensity = isMobile() ? 0.6 + Math.random() * 1 : 1 + Math.random() * 1.5;
                     const shakeX = (Math.random() - 0.5) * shakeIntensity;
                     const shakeY = (Math.random() - 0.5) * shakeIntensity;
                     document.body.style.transform = `translate(${shakeX}px, ${shakeY}px)`;
-                    
-                    setTimeout(() => {
-                        document.body.style.transform = 'translate(0, 0)';
-                    }, 50);
+                    setTimeout(() => document.body.style.transform = 'translate(0, 0)', 60);
                 }
             }, shakeFrequency);
 
             const colorShifts = ['#1a1a1a', '#2a1a2a', '#1a2a2a', '#2a2a1a', '#2a1a1a'];
             setInterval(() => {
-                if (animationRunning && Math.random() < 0.2) {
+                if (animationRunning && Math.random() < 0.12) {
                     const randomColor = colorShifts[Math.floor(Math.random() * colorShifts.length)];
                     document.body.style.backgroundColor = randomColor;
-                    setTimeout(() => {
-                        document.body.style.backgroundColor = '#1a1a1a';
-                    }, 200);
+                    setTimeout(() => document.body.style.backgroundColor = '#1a1a1a', 180);
                 }
             }, colorShiftFrequency);
 
             setInterval(() => {
-                if (animationRunning && Math.random() < (isMobile() ? 0.2 : 0.4)) {
-                    spawnFloatingText();
-                }
+                if (animationRunning && Math.random() < (isMobile() ? 0.18 : 0.36)) spawnFloatingText();
             }, floatingTextFrequency);
         }
 
         function spawnFloatingText() {
+            // create readable floating text (no rotation) that gently floats up then fades
             const text = floatingPhrases[Math.floor(Math.random() * floatingPhrases.length)];
             const element = document.createElement('div');
             element.className = 'floating-text';
             element.textContent = text;
-            element.style.left = Math.random() * window.innerWidth + 'px';
-            element.style.top = Math.random() * window.innerHeight + 'px';
+            element.style.left = (10 + Math.random() * (window.innerWidth - 120)) + 'px';
+            const startTop = window.innerHeight * (0.2 + Math.random() * 0.6);
+            element.style.top = startTop + 'px';
             element.style.color = ['#ff6b6b', '#ffd93d', '#6bcf7f', '#4d96ff'][Math.floor(Math.random() * 4)];
-            element.style.fontSize = isMobile() ? (12 + Math.random() * 10) + 'px' : (20 + Math.random() * 20) + 'px';
-            element.style.transform = `rotate(${Math.random() * 360}deg)`;
+            element.style.fontSize = isMobile() ? (12 + Math.random() * 8) + 'px' : (16 + Math.random() * 18) + 'px';
+            element.style.opacity = '0.95';
+            element.style.transform = 'translateY(0)'; // no rotation
 
             document.getElementById('backgroundLayer').appendChild(element);
 
-            setTimeout(() => {
-                element.remove();
-            }, 3000);
+            // animate up and fade with Web Animations API
+            const distance = 80 + Math.random() * 140;
+            element.animate([
+                { transform: 'translateY(0px)', opacity: 0.95 },
+                { transform: `translateY(-${distance}px)`, opacity: 0.0 }
+            ], {
+                duration: 2800 + Math.random() * 1200,
+                easing: 'cubic-bezier(.2,.8,.2,1)'
+            }).onfinish = () => element.remove();
         }
 
         function startVideoZoom(video) {
             const startWidth = isMobile() ? 320 : 640;
-            const endWidth = window.innerWidth * (isMobile() ? 1.1 : 1.2);
+            const endWidth = window.innerWidth * (isMobile() ? 1.05 : 1.12);
             const startHeight = isMobile() ? 180 : 360;
-            const endHeight = window.innerHeight * (isMobile() ? 1.1 : 1.2);
+            const endHeight = window.innerHeight * (isMobile() ? 1.05 : 1.12);
 
             const updateZoom = () => {
                 const currentTime = video.currentTime;
                 const duration = video.duration;
-                
                 if (duration && !isNaN(duration)) {
                     const progress = Math.min(currentTime / duration, 1);
-                    
                     const currentWidth = startWidth + (endWidth - startWidth) * progress;
-                    const currentHeight = startHeight + (endHeight - startHeight) * progress;
-                    
-                    const blur = isMobile() ? progress * 1.5 : progress * 3;
-                    
+                    const blur = isMobile() ? progress * 1.2 : progress * 2.4;
                     const videoContainer = document.getElementById('videoContainer');
-                    videoContainer.style.filter = `drop-shadow(0 0 ${20 + blur * 5}px rgba(139, 92, 246, 0.6)) blur(${blur * 0.1}px)`;
-                    videoContainer.style.transform = `translate(-50%, -50%) scale(${1 + progress * 0.1})`;
-                    
-                    video.style.width = currentWidth + 'px';
-                    video.style.height = currentHeight + 'px';
+                    videoContainer.style.filter = `drop-shadow(0 0 ${20 + blur * 5}px rgba(139,92,246,0.6)) blur(${blur * 0.08}px)`;
+                    videoContainer.style.transform = `translate(-50%, -50%) scale(${1 + progress * 0.06})`;
+                    video.style.width = Math.min(currentWidth, window.innerWidth * 0.95) + 'px';
+                    video.style.height = (startHeight + (endHeight - startHeight) * progress) + 'px';
                 }
-                
-                if (video.played && video.currentTime > 0 && video.currentTime < video.duration) {
-                    requestAnimationFrame(updateZoom);
-                }
+                if (!video.paused && !video.ended) requestAnimationFrame(updateZoom);
             };
 
-            video.addEventListener('playing', () => {
-                updateZoom();
-            });
-
-            video.addEventListener('timeupdate', () => {
-                updateZoom();
-            });
+            video.addEventListener('playing', updateZoom);
+            video.addEventListener('timeupdate', updateZoom);
         }
 
         function startBackgroundAnimation() {
             spawnCharacter();
-            const spawnInterval = isMobile() ? 1200 : 600;
+            const spawnInterval = isMobile() ? 1400 : 700;
             setInterval(() => {
-                if (activeCharacters.length < maxCharacters && animationRunning) {
-                    spawnCharacter();
-                }
+                if (activeCharacters.length < maxCharacters && animationRunning) spawnCharacter();
             }, spawnInterval);
 
             let lastPhraseTime = 0;
             setInterval(() => {
-                if (Math.random() < (isMobile() ? 0.15 : 0.3) && activeCharacters.length < maxCharacters && animationRunning) {
+                if (Math.random() < (isMobile() ? 0.12 : 0.25) && activeCharacters.length < maxCharacters && animationRunning) {
                     const now = Date.now();
-                    if (now - lastPhraseTime > 3000) {
-                        spawnPhrase();
-                        lastPhraseTime = now;
-                    }
+                    if (now - lastPhraseTime > 3000) { spawnPhrase(); lastPhraseTime = now; }
                 }
             }, 1000);
 
-            const emojiInterval = isMobile() ? 4000 : 2000;
+            const emojiInterval = isMobile() ? 3800 : 2200;
             setInterval(() => {
-                if (Math.random() < (isMobile() ? 0.2 : 0.4) && animationRunning) {
-                    spawnEmojiCharacter();
-                }
+                if (Math.random() < (isMobile() ? 0.18 : 0.32) && animationRunning) spawnEmojiCharacter();
             }, emojiInterval);
 
             updateAnimation();
@@ -656,9 +440,9 @@ oO      █████████      Oo
             const element = document.createElement('div');
             element.className = 'ascii-character';
             element.textContent = emoji;
-            element.style.color = '#' + Math.floor(Math.random()*16777215).toString(16);
+            element.style.color = '#' + Math.floor(Math.random() * 16777215).toString(16);
             element.style.fontSize = isMobile() ? (12 + Math.random() * 8) + 'px' : (16 + Math.random() * 12) + 'px';
-            element.style.opacity = 0.6 + Math.random() * 0.4;
+            element.style.opacity = 0.6 + Math.random() * 0.3;
 
             const startX = Math.random() * window.innerWidth;
             const startY = Math.random() * window.innerHeight;
@@ -668,7 +452,7 @@ oO      █████████      Oo
             document.getElementById('backgroundLayer').appendChild(element);
 
             const angle = Math.random() * Math.PI * 2;
-            const speed = isMobile() ? 0.2 + Math.random() * 1 : 0.5 + Math.random() * 2;
+            const speed = isMobile() ? 0.2 + Math.random() * 0.8 : 0.4 + Math.random() * 1.6;
 
             const character = {
                 element: element,
@@ -677,7 +461,7 @@ oO      █████████      Oo
                 vx: Math.cos(angle) * speed,
                 vy: Math.sin(angle) * speed,
                 isEmoji: true,
-                lifetime: 8000
+                lifetime: 7000 + Math.random() * 5000
             };
 
             activeCharacters.push(character);
@@ -688,42 +472,38 @@ oO      █████████      Oo
             const element = document.createElement('div');
             element.className = 'ascii-character';
             element.style.color = dancer.color;
-            element.style.fontSize = isMobile() ? (8 + Math.random() * 6) + 'px' : (12 + Math.random() * 8) + 'px';
-            element.style.opacity = 0.5 + Math.random() * 0.5;
+            element.style.fontSize = isMobile() ? (10 + Math.random() * 6) + 'px' : (14 + Math.random() * 8) + 'px';
+            element.style.opacity = 0.6 + Math.random() * 0.4;
 
-            const startX = Math.random() * window.innerWidth;
-            const startY = Math.random() * window.innerHeight;
+            const startX = Math.max(8, Math.random() * (window.innerWidth - 80));
+            const startY = Math.max(8, Math.random() * (window.innerHeight - 80));
             element.style.left = startX + 'px';
             element.style.top = startY + 'px';
+            element.textContent = dancer.frames[0];
 
             document.getElementById('backgroundLayer').appendChild(element);
 
             const angle = Math.random() * Math.PI * 2;
-            const speed = isMobile() ? 0.2 + Math.random() * 0.8 : 0.5 + Math.random() * 1.5;
-            
-            let movementType = Math.floor(Math.random() * 7);
-            let extraData = {};
+            const baseSpeed = isMobile() ? 0.15 + Math.random() * 0.6 : 0.3 + Math.random() * 1.0;
 
-            if (movementType === 6) {
-                extraData.centerX = window.innerWidth * 0.5;
-                extraData.centerY = window.innerHeight * 0.5;
-                extraData.radius = 50 + Math.random() * 100;
-                extraData.angle = Math.random() * Math.PI * 2;
-            }
+            // restricted movement types: 0 = drift, 1 = gentle bob down, 2 = horizontal drift, 3 = slow random walk
+            const movementType = Math.floor(Math.random() * 4);
 
             const character = {
                 element: element,
                 dancer: dancer,
                 x: startX,
                 y: startY,
-                vx: Math.cos(angle) * speed,
-                vy: Math.sin(angle) * speed,
+                vx: Math.cos(angle) * baseSpeed,
+                vy: Math.sin(angle) * baseSpeed,
                 frameIndex: 0,
                 frameTimer: 0,
-                frameInterval: 200 + Math.random() * 300,
+                frameInterval: 240 + Math.random() * 380,
                 movementType: movementType,
-                speed: speed,
-                extraData: extraData
+                speed: baseSpeed,
+                sync: chorusDetected,
+                baseY: startY,
+                offset: Math.random() * 1000
             };
 
             activeCharacters.push(character);
@@ -735,9 +515,9 @@ oO      █████████      Oo
             element.className = 'ascii-character';
             element.style.color = '#a8dadc';
             element.style.fontSize = isMobile() ? (10 + Math.random() * 4) + 'px' : (14 + Math.random() * 6) + 'px';
-            element.style.opacity = 0.4 + Math.random() * 0.3;
+            element.style.opacity = 0.6 + Math.random() * 0.3;
 
-            const startX = Math.random() * window.innerWidth;
+            const startX = Math.random() * (window.innerWidth - 120) + 10;
             const startY = Math.random() * window.innerHeight;
             element.style.left = startX + 'px';
             element.style.top = startY + 'px';
@@ -745,25 +525,25 @@ oO      █████████      Oo
 
             document.getElementById('backgroundLayer').appendChild(element);
 
-            const angle = Math.random() * Math.PI * 2;
-            const speed = isMobile() ? 0.1 + Math.random() * 0.4 : 0.3 + Math.random() * 0.8;
+            const speed = isMobile() ? 0.05 + Math.random() * 0.3 : 0.12 + Math.random() * 0.6;
 
             const character = {
                 element: element,
                 x: startX,
                 y: startY,
-                vx: Math.cos(angle) * speed,
-                vy: Math.sin(angle) * speed,
+                vx: (Math.random() - 0.5) * speed,
+                vy: (Math.random() - 0.5) * speed,
                 isPhrase: true,
-                lifetime: 15000
+                lifetime: 9000 + Math.random() * 6000
             };
 
             activeCharacters.push(character);
         }
 
         function updateAnimation() {
-            const padding = 150;
+            const padding = 180;
             const toRemove = [];
+            const nowMs = performance.now();
 
             for (let i = 0; i < activeCharacters.length; i++) {
                 const char = activeCharacters[i];
@@ -778,52 +558,46 @@ oO      █████████      Oo
                     char.x += char.vx;
                     char.y += char.vy;
                 } else {
+                    // frame update (dance)
                     char.frameTimer += 16;
-                    if (char.frameTimer >= char.frameInterval) {
+                    const effectiveInterval = Math.max(80, char.frameInterval * (1 - beatIntensity * 0.6));
+                    if (char.frameTimer >= effectiveInterval) {
                         char.frameIndex = (char.frameIndex + 1) % char.dancer.frames.length;
                         char.element.textContent = char.dancer.frames[char.frameIndex];
                         char.frameTimer = 0;
                     }
 
-                    if (char.movementType === 0) {
-                        char.x += char.vx;
-                        char.y += char.vy;
-                    } else if (char.movementType === 1) {
-                        char.y += char.speed;
-                        if (Math.random() < 0.02) {
-                            char.vx = (Math.random() - 0.5) * 2;
+                    if (char.sync) {
+                        // sync to beat: gentle bob based on beatIntensity
+                        const freq = 2 + beatIntensity * 8; // speed of bob
+                        const amp = 6 + beatIntensity * 18; // amplitude
+                        char.y = char.baseY + Math.sin((nowMs + char.offset) * 0.002 * freq) * amp;
+                        // small lateral slow drift for flow
+                        char.x += Math.sin((nowMs + char.offset) * 0.001) * 0.25;
+                    } else {
+                        // ordered movement types (no spinning or chaotic rotation)
+                        if (char.movementType === 0) {
+                            char.x += char.vx; char.y += Math.sin((nowMs + char.offset) * 0.0008) * 0.4;
+                        } else if (char.movementType === 1) {
+                            char.y += char.speed * 0.6;
+                            if (Math.random() < 0.01) char.vx = (Math.random() - 0.5) * 0.6;
+                            char.x += char.vx * 0.3;
+                        } else if (char.movementType === 2) {
+                            char.x += char.speed * 0.8;
+                            if (Math.random() < 0.02) char.vy = (Math.random() - 0.5) * 0.6;
+                            char.y += char.vy * 0.4;
+                        } else if (char.movementType === 3) {
+                            // gentle slow wandering
+                            if (Math.random() < 0.02) {
+                                char.vx = (Math.random() - 0.5) * 0.8;
+                                char.vy = (Math.random() - 0.5) * 0.8;
+                            }
+                            char.x += char.vx * 0.6;
+                            char.y += char.vy * 0.6;
                         }
-                        char.x += char.vx * 0.5;
-                    } else if (char.movementType === 2) {
-                        char.x += char.speed;
-                        if (Math.random() < 0.03) {
-                            char.vy = (Math.random() - 0.5) * 1.5;
-                        }
-                        char.y += char.vy;
-                    } else if (char.movementType === 3) {
-                        char.x += Math.sin(Date.now() * 0.002) * 2;
-                        char.y += char.speed * 0.5;
-                    } else if (char.movementType === 4) {
-                        if (Math.random() < 0.05) {
-                            char.vx = (Math.random() - 0.5) * 3;
-                            char.vy = (Math.random() - 0.5) * 3;
-                        }
-                        char.x += char.vx;
-                        char.y += char.vy;
-                    } else if (char.movementType === 5) {
-                        char.x += char.vx;
-                        char.y += char.vy;
-                        if (char.vy < 2) char.vy += 0.1;
-                        if (char.y > window.innerHeight) {
-                            char.vy = -Math.random() * 3;
-                            char.y = window.innerHeight;
-                        }
-                    } else if (char.movementType === 6) {
-                        char.extraData.angle += 0.05;
-                        char.x = char.extraData.centerX + Math.cos(char.extraData.angle) * char.extraData.radius;
-                        char.y = char.extraData.centerY + Math.sin(char.extraData.angle) * char.extraData.radius;
                     }
 
+                    // bounds removal
                     if (char.x < -padding || char.x > window.innerWidth + padding ||
                         char.y < -padding || char.y > window.innerHeight + padding) {
                         char.element.remove();
@@ -832,19 +606,15 @@ oO      █████████      Oo
                     }
                 }
 
-                char.element.style.left = char.x + 'px';
-                char.element.style.top = char.y + 'px';
+                // apply position (keep text orientation unchanged)
+                char.element.style.left = Math.round(char.x) + 'px';
+                char.element.style.top = Math.round(char.y) + 'px';
             }
 
-            for (let i = toRemove.length - 1; i >= 0; i--) {
-                activeCharacters.splice(toRemove[i], 1);
-            }
+            for (let i = toRemove.length - 1; i >= 0; i--) activeCharacters.splice(toRemove[i], 1);
 
-            if (animationRunning) {
-                requestAnimationFrame(updateAnimation);
-            }
+            if (animationRunning) requestAnimationFrame(updateAnimation);
         }
     </script>
-
 </body>
 </html>
