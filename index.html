@@ -5,59 +5,100 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Are you sure?</title>
   <style>
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{
-      width:100%;height:100vh;background:#1a1a1a;display:flex;
-      justify-content:center;align-items:center;overflow:hidden;
-      font-family:'Courier New',monospace;transition:background-color .1s;
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      width: 100%; height: 100vh;
+      background: #1a1a1a;
+      display: flex; justify-content: center; align-items: center;
+      overflow: hidden; font-family: 'Courier New', monospace;
+      transition: background-color .12s;
     }
-    #backgroundLayer{
-      position:fixed;inset:0;z-index:1;pointer-events:none;
-      overflow:hidden;
+
+    #backgroundLayer {
+      position: fixed; inset: 0;
+      z-index: 1; pointer-events: none; overflow: hidden;
     }
-    .ascii-character{
-      position:absolute;
-      font-family:'Courier New',monospace;
-      white-space:pre;
-      user-select:none;
-      line-height:1.05;
-      will-change:left,top;
-      transform-origin:center;
+
+    .ascii-character {
+      position: absolute;
+      font-family: 'Courier New', monospace;
+      white-space: pre;
+      user-select: none;
+      line-height: 1.05;
+      will-change: left, top;
+      transform-origin: center;
     }
-    .floating-text{
-      position:absolute;white-space:nowrap;font-family:'Courier New',monospace;
-      user-select:none;opacity:.9;z-index:2;pointer-events:none;
-      transform-origin:center;
+
+    .floating-text {
+      position: absolute;
+      white-space: nowrap;
+      font-family: 'Courier New', monospace;
+      user-select: none;
+      opacity: 0.9;
+      z-index: 2;
+      pointer-events: none;
+      transform-origin: center;
     }
-    #buttonContainer{
-      position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
-      z-index:100;padding:20px;
+
+    #buttonContainer {
+      position: fixed; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 100; padding: 20px;
     }
-    .trust-btn{
-      background:#8b5cf6;color:#fff;border:4px solid #fff;
-      padding:12px 28px;font-family:'Courier New',monospace;font-weight:700;
-      font-size:18px;cursor:pointer;box-shadow:6px 6px 0 #4c1d95;
-      transition:all .08s ease;
+
+    /* RESTORED: original responsive size/padding */
+    .trust-btn {
+      background: #8b5cf6;
+      color: white;
+      border: 4px solid white;
+      padding: clamp(12px, 4vw, 18px) clamp(24px, 8vw, 40px);
+      font-family: 'Courier New', monospace;
+      font-size: clamp(18px, 5vw, 28px);
+      font-weight: bold;
+      border-radius: 0;
+      cursor: pointer;
+      box-shadow: 6px 6px 0 #4c1d95;
+      transition: all 0.1s ease;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
     }
-    .trust-btn:active{transform:translate(6px,6px);box-shadow:0 0 0 #4c1d95}
-    #videoContainer{
-      position:fixed;top:50%;left:50%;z-index:50;display:none;
-      transform:translate(-50%,-50%);filter:drop-shadow(0 0 20px rgba(139,92,246,.6));
-      padding:10px;max-width:95vw;max-height:95vh;
+
+    .trust-btn:hover { transform: translate(3px,3px); box-shadow: 3px 3px 0 #4c1d95; }
+    .trust-btn:active { transform: translate(6px,6px); box-shadow: 0 0 0 #4c1d95; }
+
+    #videoContainer {
+      position: fixed; top: 50%; left: 50%;
+      z-index: 50; display: none;
+      transform: translate(-50%, -50%);
+      filter: drop-shadow(0 0 20px rgba(139,92,246,.6));
+      padding: 10px; max-width: 95vw; max-height: 95vh;
     }
-    #prankVideo{width:100%;height:auto;border:3px solid #8b5cf6;border-radius:4px}
-    #endScreen{
-      position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
-      z-index:100;display:none;text-align:center;background:rgba(26,26,26,.95);
-      padding:30px;border:3px solid #8b5cf6;border-radius:6px;max-width:90vw;overflow:auto;
+
+    #prankVideo {
+      width: 100%; height: auto;
+      border: 3px solid #8b5cf6; border-radius: 4px;
+      display: block;
     }
-    #endScreen h1{color:#ffd93d;margin-bottom:12px}
-    #cookieArt{font-family:'Courier New',monospace;color:#d4a574;white-space:pre;margin:12px 0}
-    #colorBeat{position:fixed;inset:0;z-index:2;pointer-events:none;display:none;transition:background-color .08s}
-    @media(max-width:768px){
-      .trust-btn{font-size:16px;padding:10px 18px}
-      .floating-text{font-size:14px}
-      .ascii-character{font-size:12px}
+
+    #endScreen {
+      position: fixed; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 100; display: none; text-align: center;
+      background: rgba(26,26,26,0.95);
+      padding: 36px; border: 3px solid #8b5cf6; border-radius: 6px;
+      max-width: 90vw; max-height: 90vh; overflow-y: auto;
+    }
+
+    #endScreen h1 { font-size: clamp(20px, 6vw, 36px); color: #ffd93d; margin-bottom: 12px; }
+    #cookieArt { font-family: 'Courier New', monospace; color: #d4a574; white-space: pre; margin: 12px 0; line-height: 1.05; }
+    #endScreen p { color: #a8dadc; margin-top: 10px; }
+
+    #colorBeat { position: fixed; inset: 0; z-index: 2; pointer-events: none; display: none; transition: background-color .08s; }
+
+    @media (max-width: 768px) {
+      .floating-text { font-size: clamp(12px, 3.5vw, 18px); }
+      .ascii-character { font-size: clamp(10px, 3.2vw, 14px) !important; }
+      body { overflow-y: auto; }
     }
   </style>
 </head>
@@ -97,7 +138,10 @@
     `;
 
     const isMobile = () => window.innerWidth <= 768;
-    const floatingPhrases = ['HEYYEYAAEYAAAEYAEYAA',"What's going on?","WAIT","WHY","NOPE","HELP","LMAO"];
+
+    // phrases and dancers (kept small & readable)
+    const floatingPhrases = ['HEYYEYAAEYAAAEYAEYAA', "What's going on?", 'WAIT', 'WHY', 'NOPE', 'HELP'];
+
     const asciiDancers = [
       ['  O\n /|\\\n / \\'],
       [' ┌( ಠ_ಠ )┘',' └( ಠ_ಠ )┐'],
@@ -106,256 +150,193 @@
       ['(ง •̀_•́)ง'],
       ['(ノಠ益ಠ)ノ']
     ];
+
+    // state
     let activeCharacters = [];
-    const maxCharacters = isMobile() ? 10 : 20;
+    const MAX_CHAR = isMobile() ? 10 : 20;
     let animationRunning = false;
-    let audioContext = null;
-    let analyser = null;
-    let dataArray = null;
-    let beatIntensity = 0;
-    let spawnTimer = null;
-    let updateRAF = null;
+    let spawnIntervalId = null;
+    let rafId = null;
 
-    // Simple peak detection state
-    let runningAvg = 0;
-    let lastPeak = 0;
-
-    // Setup end screen cookie
+    // set cookie art and end text
     document.getElementById('cookieArt').textContent = cookieASCII;
+    document.getElementById('endText').textContent = "Here's a cookie for watching till the end";
 
-    function showEndScreen(){
-      animationRunning = false;
-      clearInterval(spawnTimer);
-      cancelAnimationFrame(updateRAF);
-      document.getElementById('videoContainer').style.display = 'none';
-      document.getElementById('endScreen').style.display = 'block';
-      document.getElementById('cookieArt').textContent = cookieASCII;
-      document.getElementById('endText').textContent = "Here's a cookie for watching till the end";
-    }
+    // start button handler (hides reliably and starts animations)
+    document.getElementById('startBtn').addEventListener('click', () => {
+      const btnContainer = document.getElementById('buttonContainer');
+      btnContainer.style.display = 'none';
+      btnContainer.style.pointerEvents = 'none';
 
-    function startPrank(){
-      // hide button reliably
-      const bc = document.getElementById('buttonContainer');
-      bc.style.display = 'none';
-      bc.style.pointerEvents = 'none';
-
-      const vidCont = document.getElementById('videoContainer');
-      vidCont.style.display = 'block';
+      const videoContainer = document.getElementById('videoContainer');
+      videoContainer.style.display = 'block';
       const video = document.getElementById('prankVideo');
 
       animationRunning = true;
-      startSimpleBackground();
+      startBackground();
       startScreenEffects();
       startVideoZoom(video);
-      initAudioContext(video);
 
-      video.play().catch(e => console.warn('video play prevented', e));
+      video.play().catch(e => console.warn('video play prevented:', e));
       video.addEventListener('ended', showEndScreen, { once: true });
+    });
+
+    function showEndScreen() {
+      animationRunning = false;
+      if (spawnIntervalId) clearInterval(spawnIntervalId);
+      if (rafId) cancelAnimationFrame(rafId);
+      document.getElementById('videoContainer').style.display = 'none';
+      document.getElementById('endScreen').style.display = 'block';
+      document.getElementById('cookieArt').textContent = cookieASCII;
     }
 
-    async function initAudioContext(video){
-      try{
-        audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        analyser = audioContext.createAnalyser();
-        analyser.fftSize = 512;
-        const src = audioContext.createMediaElementAudioSource(video);
-        src.connect(analyser);
-        analyser.connect(audioContext.destination);
-        dataArray = new Uint8Array(analyser.frequencyBinCount);
-        // resume (some browsers require user gesture)
-        if (audioContext.state === 'suspended') await audioContext.resume();
-        startBeatDetection();
-      }catch(e){
-        console.log('Audio not available, using fallback timing', e);
-        startBeatFallback();
-      }
-    }
-
-    function startBeatDetection(){
-      function detect(){
+    // spawn and animate characters (clean, deterministic bob + small drift)
+    function startBackground(){
+      // spawn initial set
+      const initial = Math.min(6, MAX_CHAR);
+      for (let i = 0; i < initial; i++) spawnCharacter();
+      // spawn rate-limited
+      spawnIntervalId = setInterval(() => {
         if (!animationRunning) return;
-        analyser.getByteFrequencyData(dataArray);
-        let sum = 0;
-        for (let i=0;i<dataArray.length;i++) sum += dataArray[i];
-        const instant = sum / dataArray.length / 255; // 0..1
-        runningAvg = 0.92 * runningAvg + 0.08 * instant;
-        const diff = Math.max(0, instant - runningAvg);
-        beatIntensity = Math.min(1, instant * 1.3);
-        const t = performance.now();
-        // small peak detection to make the dance punchier
-        if (diff > 0.06 && t - lastPeak > 120){ lastPeak = t; triggerBeatPulse(); }
-        requestAnimationFrame(detect);
-      }
-      detect();
-    }
+        if (activeCharacters.length < MAX_CHAR) spawnCharacter();
+      }, isMobile() ? 900 : 650);
 
-    function startBeatFallback(){
-      setInterval(()=>{ if (!animationRunning) return; beatIntensity = Math.random()*0.7; triggerBeatPulse(); }, 300);
-    }
-
-    function triggerBeatPulse(){
-      // momentary highlight
-      const beatEl = document.getElementById('colorBeat');
-      beatEl.style.backgroundColor = `rgba(200,120,255,${0.15 + beatIntensity*0.25})`;
-      beatEl.style.display = 'block';
-      setTimeout(()=>{ beatEl.style.display = 'none'; }, 120);
-    }
-
-    // spawn management: limited, ordered, stable bobbing
-    function startSimpleBackground(){
-      // spawn a few immediately
-      for (let i=0;i<Math.min(6, maxCharacters); i++) spawnCharacter();
-      // spawn timer (rate-limited)
-      spawnTimer = setInterval(()=>{
-        if (!animationRunning) return;
-        if (activeCharacters.length < maxCharacters) spawnCharacter();
-      }, isMobile() ? 900 : 600);
-      updateAnimation();
+      // start RAF loop
+      rafId = requestAnimationFrame(animationLoop);
     }
 
     function spawnCharacter(){
-      const dancerFrames = asciiDancers[Math.floor(Math.random()*asciiDancers.length)];
+      const frames = asciiDancers[Math.floor(Math.random() * asciiDancers.length)];
       const el = document.createElement('div');
       el.className = 'ascii-character';
       el.style.color = '#a8dadc';
-      const fs = isMobile() ? (10 + Math.random()*6) : (12 + Math.random()*8);
-      el.style.fontSize = fs + 'px';
-      el.style.opacity = 0.85;
-      el.textContent = dancerFrames[0];
+      const fontSize = isMobile() ? (10 + Math.random() * 6) : (12 + Math.random() * 8);
+      el.style.fontSize = fontSize + 'px';
+      el.style.opacity = 0.88;
+      el.textContent = frames[0];
 
-      // place around center but not overlapping video too aggressively
-      const w = window.innerWidth, h = window.innerHeight;
-      const margin = 40;
-      const x = margin + Math.random() * (w - margin*2);
-      const y = margin + Math.random() * (h - margin*2);
+      // place fairly evenly but not overlapping center
+      const margin = 30;
+      const w = window.innerWidth - margin * 2;
+      const h = window.innerHeight - margin * 2;
+      const x = margin + Math.random() * w;
+      const y = margin + Math.random() * h;
+
       el.style.left = Math.round(x) + 'px';
       el.style.top = Math.round(y) + 'px';
       document.getElementById('backgroundLayer').appendChild(el);
 
-      // small drift velocities, constrained
-      const vx = (Math.random() - 0.5) * 0.4; // slow drift
-      const vy = (Math.random() - 0.5) * 0.25;
+      // slow deterministic bob parameters (independent of video)
+      const baseY = y;
+      const offset = Math.random() * 1000;
+      const freq = 1.1 + Math.random() * 0.6; // bob frequency
+      const amp = 3 + Math.random() * 6;      // bob amplitude (px)
+      const vx = (Math.random() - 0.5) * 0.3; // tiny horizontal drift
+      const vy = (Math.random() - 0.5) * 0.18;
 
-      const char = {
+      const character = {
         element: el,
-        frames: dancerFrames,
+        frames,
         frameIndex: 0,
         frameTimer: 0,
-        frameInterval: 280 + Math.random()*220,
-        x, y, baseY: y,
-        vx, vy,
-        offset: Math.random()*1000,
-        lifetime: 20000 // graceful removal if necessary
+        frameInterval: 320 + Math.random() * 260,
+        x, y, baseY, offset, freq, amp, vx, vy,
+        lifetime: 24000 // graceful removal if needed
       };
-      activeCharacters.push(char);
+
+      activeCharacters.push(character);
     }
 
     function spawnFloatingText(){
-      const txt = floatingPhrases[Math.floor(Math.random()*floatingPhrases.length)];
+      const txt = floatingPhrases[Math.floor(Math.random() * floatingPhrases.length)];
       const el = document.createElement('div');
       el.className = 'floating-text';
       el.textContent = txt;
-      const left = 12 + Math.random()*(window.innerWidth - 120);
-      const top = 50 + Math.random()*(window.innerHeight - 120);
-      el.style.left = left + 'px';
-      el.style.top = top + 'px';
-      el.style.color = ['#ff6b6b','#ffd93d','#6bcf7f','#4d96ff'][Math.floor(Math.random()*4)];
-      el.style.fontSize = isMobile() ? (12 + Math.random()*8)+'px' : (14 + Math.random()*12)+'px';
+      const left = 12 + Math.random() * (window.innerWidth - 120);
+      const top = 40 + Math.random() * (window.innerHeight - 120);
+      el.style.left = Math.round(left) + 'px';
+      el.style.top = Math.round(top) + 'px';
+      el.style.color = ['#ff6b6b','#ffd93d','#6bcf7f','#4d96ff'][Math.floor(Math.random() * 4)];
+      el.style.fontSize = isMobile() ? (12 + Math.random() * 8) + 'px' : (14 + Math.random() * 12) + 'px';
       document.getElementById('backgroundLayer').appendChild(el);
-      el.animate([{opacity:1, transform:'translateY(0)'}, {opacity:0, transform:'translateY(-70px)'}], {duration:2800, easing:'ease-out'}).onfinish = ()=>el.remove();
+      el.animate([
+        { transform: 'translateY(0)', opacity: 1 },
+        { transform: 'translateY(-80px)', opacity: 0 }
+      ], { duration: 2800, easing: 'cubic-bezier(.2,.8,.2,1)' }).onfinish = () => el.remove();
     }
 
-    function updateAnimation(){
-      const now = performance.now();
-      // update dancers
+    // main animation loop (single RAF)
+    function animationLoop(now){
+      // update characters
       for (let i = activeCharacters.length - 1; i >= 0; i--){
         const c = activeCharacters[i];
-        // frame update faster when beatIntensity larger
+        // frame advance
         c.frameTimer += 16;
-        const effInterval = Math.max(70, c.frameInterval * (1 - beatIntensity*0.55));
-        if (c.frameTimer >= effInterval){
+        if (c.frameTimer >= c.frameInterval){
           c.frameIndex = (c.frameIndex + 1) % c.frames.length;
           c.element.textContent = c.frames[c.frameIndex];
           c.frameTimer = 0;
         }
-
-        // vertical bob synced to beatIntensity (always gentle)
-        const t = (now + c.offset) * 0.002;
-        const freq = 1.2 + beatIntensity*3.0;
-        const amp = 4 + beatIntensity*12;
-        c.y = c.baseY + Math.sin(t * freq) * amp;
-
-        // gentle horizontal drift (very small)
+        // deterministic bob & small drift (NO sync to video)
+        const t = (now + c.offset) * 0.001;
+        c.y = c.baseY + Math.sin(t * c.freq) * c.amp;
         c.x += c.vx;
-        // apply tiny damping so they don't run away
-        c.vx *= 0.995;
-        c.vy *= 0.995;
-        // small vertical nudges from vy as slow drift
-        c.y += c.vy * 0.5;
+        // gentle decay on vx so they don't drift off
+        c.vx *= 0.997;
 
-        // keep onscreen
-        const padding = 40;
-        if (c.x < -padding || c.x > window.innerWidth + padding || c.y < -padding || c.y > window.innerHeight + padding){
-          // remove out-of-bounds characters
-          c.element.remove();
-          activeCharacters.splice(i,1);
-          continue;
-        }
-
-        // lifetime guard (remove gently near end)
+        // lifetime guard
         c.lifetime -= 16;
-        if (c.lifetime <= 0){
+        if (c.lifetime <= 0 || c.x < -120 || c.x > window.innerWidth + 120 || c.y < -120 || c.y > window.innerHeight + 120){
           c.element.remove();
-          activeCharacters.splice(i,1);
+          activeCharacters.splice(i, 1);
           continue;
         }
-
         c.element.style.left = Math.round(c.x) + 'px';
         c.element.style.top = Math.round(c.y) + 'px';
       }
 
-      // occasionally spawn floating text (readable, not rotated)
+      // sometimes spawn floating text
       if (animationRunning && Math.random() < 0.01) spawnFloatingText();
 
-      updateRAF = requestAnimationFrame(updateAnimation);
+      rafId = requestAnimationFrame(animationLoop);
     }
 
     function startScreenEffects(){
-      // small background color pulses occasionally
-      setInterval(()=>{
+      setInterval(() => {
         if (!animationRunning) return;
         if (Math.random() < 0.08){
-          const cols = ['#1a1a1a','#2a1a2a','#1a2a2a','#2a2a1a'];
-          const c = cols[Math.floor(Math.random()*cols.length)];
+          const colors = ['#1a1a1a','#2a1a2a','#1a2a2a','#2a2a1a'];
+          const c = colors[Math.floor(Math.random() * colors.length)];
           document.body.style.backgroundColor = c;
-          setTimeout(()=>document.body.style.backgroundColor = '#1a1a1a',120);
+          setTimeout(() => document.body.style.backgroundColor = '#1a1a1a', 120);
         }
-      }, 800);
+      }, 900);
     }
 
     function startVideoZoom(video){
-      const updateZoom = ()=>{
+      // gentle zoom while playing (no movement sync)
+      function update(){
         if (!video || video.paused || video.ended) return;
         const dur = video.duration;
         if (dur && !isNaN(dur)){
-          const progress = Math.min(1, video.currentTime / dur);
-          const scale = 1 + progress*0.05;
-          document.getElementById('videoContainer').style.transform = `translate(-50%,-50%) scale(${scale})`;
+          const p = Math.min(1, video.currentTime / dur);
+          const s = 1 + p * 0.04;
+          document.getElementById('videoContainer').style.transform = `translate(-50%, -50%) scale(${s})`;
         }
-        requestAnimationFrame(updateZoom);
-      };
-      video.addEventListener('playing', ()=>requestAnimationFrame(updateZoom));
+        requestAnimationFrame(update);
+      }
+      video.addEventListener('playing', () => requestAnimationFrame(update));
     }
 
-    // single start handler
-    document.getElementById('startBtn').addEventListener('click', startPrank);
-
-    // fallback beat if audio not available
-    setInterval(()=>{
-      if (!animationRunning) return;
-      // slowly relax beatIntensity back towards 0 (if audio provides none)
-      beatIntensity = Math.max(0, beatIntensity * 0.95);
-    }, 200);
+    // cleanup on resize: keep behavior stable for mobile/desktop
+    window.addEventListener('resize', () => {
+      // cap characters if viewport shrinks
+      const maxNow = isMobile() ? 10 : 20;
+      while (activeCharacters.length > maxNow){
+        const c = activeCharacters.pop();
+        if (c && c.element) c.element.remove();
+      }
+    });
   </script>
 </body>
 </html>
