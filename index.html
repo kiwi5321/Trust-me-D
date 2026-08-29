@@ -33,6 +33,683 @@
             opacity: 0.9;
             z-index: 2;
             pointer-events: none;
+            transform-origin: center;
+        }
+        #buttonContainer {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            z-index: 100; padding: 20px;
+        }
+        .trust-btn {
+            background: #8b5cf6; color: white; border: 4px solid white;
+            padding: clamp(12px, 4vw, 18px) clamp(24px, 8vw, 40px);
+            font-family: 'Courier New', monospace;
+            font-size: clamp(18px, 5vw, 28px); font-weight: bold;
+            border-radius: 0; cursor: pointer; box-shadow: 6px 6px 0 #4c1d95;
+            transition: all 0.1s ease; -webkit-tap-highlight-color: transparent;
+        }
+        .trust-btn:hover { transform: translate(3px, 3px); box-shadow: 3px 3px 0 #4c1d95; }
+        .trust-btn:active { transform: translate(6px, 6px); box-shadow: 0 0 0 #4c1d95; }
+
+        #videoContainer {
+            position: fixed; top: 50%; left: 50%; z-index: 50; display: none;
+            filter: drop-shadow(0 0 20px rgba(139, 92, 246, 0.6));
+            padding: 10px; max-width: 95vw; max-height: 95vh;
+        }
+        #prankVideo {
+            width: 100%; height: auto; aspect-ratio: 16 / 9; display:block;
+            border: 3px solid #8b5cf6; border-radius: 4px; max-width: 100%; max-height: 100%;
+        }
+
+        #endScreen {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            z-index: 100; display: none; text-align: center;
+            background: rgba(26,26,26,0.95); padding: 40px; border:3px solid #8b5cf6;
+            border-radius: 4px; max-width: 90vw; max-height: 90vh; overflow-y: auto;
+            animation: slideIn 0.5s ease-out;
+        }
+        @keyframes slideIn {
+            from { opacity:0; transform: translate(-50%, -50%) scale(0.8); }
+            to { opacity:1; transform: translate(-50%, -50%) scale(1); }
+        }
+        #endScreen h1 { font-size: clamp(24px,8vw,48px); color:#ffd93d; margin-bottom:20px; text-shadow:0 0 10px rgba(255,217,61,0.5); }
+        #cookieArt { font-family:'Courier New', monospace; color:#d4a574; font-size:clamp(12px,3vw,20px); white-space:pre; margin:20px 0; line-height:1.05; text-shadow:0 0 10px rgba(212,165,116,0.3); }
+        #endScreen p { font-size:clamp(16px,4vw,22px); color:#a8dadc; margin-top:14px; }
+
+        #colorBeat {
+            position: fixed; top:0; left:0; width:100%; height:100%;
+            z-index: 2; pointer-events: none; display: none; background-color: transparent;
+            transition: background-color 0.1s ease;
+        }
+
+        @media (max-width:768px) {
+            .floating-text { font-size: clamp(14px,4vw,18px); }
+            .ascii-character { font-size: clamp(10px,3vw,14px) !important; }
+            #endScreen { padding: 20px; } body { overflow-y: auto; }
+        }
+        @media (max-width:480px) {
+            #buttonContainer { padding: 10px; }
+            .trust-btn { min-width: 200px; }
+            .floating-text { font-size: clamp(12px,3vw,16px); }
+            #endScreen { padding: 15px; border:2px solid #8b5cf6; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="backgroundLayer"></div>
+    <div id="colorBeat"></div>
+
+    <div id="buttonContainer">
+        <button class="trust-btn" onclick="startPrank()">TRUST ME</button>
+    </div>
+
+    <div id="videoContainer">
+        <video id="prankVideo" loop playsinline>
+            <source src="./HEYYEYAAEYAAAEYAEYAA%20(HQ)(3).mp4" type="video/mp4">
+        </video>
+    </div>
+
+    <div id="endScreen">
+        <h1>You watched till the end!</h1>
+        <div id="cookieArt"></div>
+        <p id="endText">Here's a cookie for watching till the end</p>
+    </div>
+
+    <script>
+        // cookie ASCII (bigger)
+        const cookieASCII = `
+             .-""""-.
+           .'  .--.  '.
+          /  .'.--.'.  \\
+         |  / /    \\ \\  |
+         ; |  |    |  | ;
+         | |  |    |  | |
+         ; |  '.__.'  | ;
+          \\ \\        / /
+           '.'.____.'.'
+             '-.____.-'
+        `;
+
+        // Detect if mobile
+        const isMobile = () => window.innerWidth <= 768;
+
+        const floatingPhrases = [
+            'HEYYEYAAEYAAAEYAEYAA',
+            "What's going on?",
+            '┌( ಠ_ಠ )┘',
+            '╰(°∇≦*)╮',
+            'WAIT',
+            'WHY',
+            'NOPE',
+            'HELP',
+            '???',
+            'LMAO',
+            'RUN'
+        ];
+
+        const extraEmojis = [
+            '⊙_⊙','ಠ╭╮ಠ','(ノಠ益ಠ)ノ','(╯°□°)╯︵ ┻━┻','┬─┬ ノ( ゜-゜ノ)','ヽ༼ຈل͜ຈ༽ノ',
+            '(´・ω・`)', '(´；ω；`)', 'щ(゜ロ゜щ)', '(๑•́ ω •̀๑)', 'ლ(´ڡ`ლ)', '(°ロ°)σ'
+        ];
+
+        const asciiDancers = [
+            { name:'dancer1', frames:['  O\n /|\\\n / \\','  O\n /|\\\n/ \\','  O\n /|\\\n \\ /','  O\n ||\\\n/ \\'], color:'#a8dadc' },
+            { name:'dancer2', frames:[' ┌( ಠ_ಠ )┘',' └( ಠ_ಠ )┐',' ┌( ಠ_ಠ )┘',' └( ಠ_ಠ )┐'], color:'#b8e0d2' },
+            { name:'dancer3', frames:['╰(°∇≦*)╮','╭(°∇≦*)╰','╰(°∇≦*)╮','╭(°∇≦*)╰'], color:'#d4c5f9' },
+            { name:'dancer4', frames:['└(°д°)┐','┌(°д°)┘','└(°д°)┐','┌(°д°)┘'], color:'#95b8d1' },
+            { name:'dancer5', frames:['ヽ(°◇° )ノ','ヽ( °◇°)ノ','ヽ(°◇° )ノ','ヽ( °◇°)ノ'], color:'#b5ead7' },
+            { name:'dancer6', frames:[' O/\\n/|\\n/ \\\\','O\\n||\\n/ \\\\','\\\\O\\n||\\\\n\\\\ /',' O\\n/|\\\\n\\\\ /'], color:'#ffdac1' },
+            { name:'dancer7', frames:['(ง •̀_•́)ง','(ง •́_•̀)ง','(ง •̀_•́)ง','(ง •́_•̀)ง'], color:'#e0aaff' },
+            { name:'dancer8', frames:['(ノಠ益ಠ)ノ','ヽ(ಠ益ಠ)ノ','(ノಠ益ಠ)ノ','ヽ(ಠ益ಠ)ノ'], color:'#c7ceea' },
+            { name:'dancer9', frames:['¯\\\\_(ツ)_/¯','_¯(ツ)¯_','¯\\\\_(ツ)_/¯','_¯(ツ)¯_'], color:'#ffc8dd' },
+            { name:'dancer10', frames:['(づ｡◕‿‿◕｡)づ','(づ｡◕‿‿◕｡)づ','(づ｡◕‿‿◕｡)づ','(づ｡◕‿‿◕｡)づ'], color:'#caffbf' },
+            { name:'dancer11', frames:[' \\\\ O /\\n  ||\\n / \\\\',' / O \\\\n  ||\\n \\\\ /',' \\\\ O /\\n  ||\\n / \\\\'], color:'#9bf6ff' },
+            { name:'dancer12', frames:['┌(・o・)┐','└(・o・)┘','┌(・o・)┐','└(・o・)┘'], color:'#bdb2ff' }
+        ];
+
+        let activeCharacters = [];
+        const maxCharacters = isMobile() ? 12 : 25;
+        let animationRunning = false;
+        let audioContext;
+        let analyser;
+        let dataArray;
+
+        // chorus/peak detection state
+        let chorusDetected = false;
+        let peakTimes = [];
+        let lastPeakTime = 0;
+        let beatIntensity = 0;
+
+        function showEndScreen() {
+            animationRunning = false;
+            document.getElementById('videoContainer').style.display = 'none';
+            document.getElementById('endScreen').style.display = 'block';
+            document.getElementById('cookieArt').textContent = cookieASCII;
+            document.getElementById('endText').textContent = "Here's a cookie for watching till the end";
+            // keep a calmer background animation running
+            animationRunning = true;
+            startBackgroundAnimation();
+        }
+
+        function startPrank() {
+            document.getElementById('buttonContainer').style.display = 'none';
+            document.getElementById('videoContainer').style.display = 'block';
+            const video = document.getElementById('prankVideo');
+            video.play().catch(error => {
+                console.error('Playback failed:', error);
+            });
+            animationRunning = true;
+            startBackgroundAnimation();
+            startVideoZoom(video);
+            startScreenEffects();
+            initAudioContext(video);
+
+            video.addEventListener('ended', showEndScreen, { once: true });
+        }
+
+        function initAudioContext(video) {
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                analyser = audioContext.createAnalyser();
+                analyser.fftSize = 1024;
+                const source = audioContext.createMediaElementAudioSource(video);
+                source.connect(analyser);
+                analyser.connect(audioContext.destination);
+                dataArray = new Uint8Array(analyser.frequencyBinCount);
+                startBeatDetection();
+            } catch (e) {
+                console.log('Audio context not supported, using fallback timing', e);
+                startBeatDetectionFallback();
+            }
+        }
+
+        function startBeatDetection() {
+            const smoothing = 0.9;
+            let runningAvg = 0;
+            const now = () => (performance || Date).now();
+
+            function detect() {
+                if (!animationRunning) return;
+
+                analyser.getByteFrequencyData(dataArray);
+                let sum = 0;
+                for (let i = 0; i < dataArray.length; i++) sum += dataArray[i];
+                const instant = sum / dataArray.length / 255;
+
+                runningAvg = smoothing * runningAvg + (1 - smoothing) * instant;
+                const diff = Math.max(0, instant - runningAvg);
+                beatIntensity = Math.min(1, (instant * 1.4));
+
+                const t = now();
+                const PEAK_THRESHOLD = 0.08;
+                const MIN_PEAK_GAP = 100;
+
+                if (diff > PEAK_THRESHOLD && t - lastPeakTime > MIN_PEAK_GAP) {
+                    lastPeakTime = t;
+                    peakTimes.push(t);
+                    const cutoff = t - 3000;
+                    peakTimes = peakTimes.filter(ts => ts >= cutoff);
+
+                    if (!chorusDetected) {
+                        if (peakTimes.length >= 4) {
+                            const span = peakTimes[peakTimes.length - 1] - peakTimes[0];
+                            const avgInterval = span / (peakTimes.length - 1);
+                            if (span < 1800 && avgInterval > 80 && avgInterval < 500) {
+                                chorusDetected = true;
+                                onChorusStart();
+                            }
+                        }
+                    }
+                }
+
+                const beatElement = document.getElementById('colorBeat');
+                const beatColors = [
+                    'rgba(255, 100, 100, 0.18)',
+                    'rgba(100, 255, 100, 0.18)',
+                    'rgba(100, 100, 255, 0.18)',
+                    'rgba(255, 255, 100, 0.18)',
+                    'rgba(255, 100, 255, 0.18)',
+                    'rgba(100, 255, 255, 0.18)'
+                ];
+                const colorIndex = Math.floor(beatIntensity * (beatColors.length - 1));
+                beatElement.style.backgroundColor = beatColors[colorIndex];
+                beatElement.style.display = beatIntensity > 0.12 ? 'block' : 'none';
+
+                requestAnimationFrame(detect);
+            }
+
+            detect();
+        }
+
+        function startBeatDetectionFallback() {
+            setInterval(() => {
+                if (animationRunning) {
+                    beatIntensity = Math.random() * 0.8;
+                    const beatElement = document.getElementById('colorBeat');
+                    beatElement.style.backgroundColor = `rgba(${Math.floor(255*beatIntensity)},${Math.floor(255*(1-beatIntensity))},150,0.18)`;
+                    beatElement.style.display = 'block';
+                    setTimeout(() => beatElement.style.display = 'none', 120);
+                    if (!chorusDetected && Math.random() < 0.08) {
+                        chorusDetected = true; onChorusStart();
+                    }
+                }
+            }, 240);
+        }
+
+        function onChorusStart() {
+            // spawn parade group near the video (mirrored left/right)
+            spawnParadeGroup();
+
+            // mark active characters to sync
+            activeCharacters.forEach(ch => { ch.sync = true; ch.baseY = ch.y; ch.offset = Math.random() * 1000;});
+            // reset after chorus window
+            setTimeout(() => {
+                chorusDetected = false;
+                activeCharacters.forEach(ch => { ch.sync = false; });
+                peakTimes = [];
+            }, 11000);
+        }
+
+        function spawnParadeGroup() {
+            const videoContainer = document.getElementById('videoContainer');
+            const rect = videoContainer.getBoundingClientRect();
+            // if video not yet visible, use center of screen
+            const centerX = rect.width ? (rect.left + rect.width / 2) : window.innerWidth / 2;
+            const centerY = rect.height ? (rect.top + rect.height / 2) : window.innerHeight / 2;
+            const sideOffsetX = rect.width ? Math.max(120, rect.width * 0.6) : Math.min(220, window.innerWidth * 0.25);
+            const rows = isMobile() ? 4 : 6;
+            const spacingY = rect.height ? Math.min(64, rect.height / (rows + 1)) : 60;
+
+            // spawn left and right columns, top-to-bottom so it's ordered
+            for (let sideIdx = 0; sideIdx < 2; sideIdx++) {
+                const side = sideIdx === 0 ? 'left' : 'right';
+                for (let i = 0; i < rows; i++) {
+                    const dancer = asciiDancers[(i + sideIdx) % asciiDancers.length];
+                    const element = document.createElement('div');
+                    element.className = 'ascii-character';
+                    element.style.color = dancer.color;
+                    element.style.fontSize = isMobile() ? (10 + Math.random() * 6) + 'px' : (14 + Math.random() * 8) + 'px';
+                    element.style.opacity = 0.85;
+                    element.textContent = dancer.frames[0];
+
+                    // compute base positions
+                    const baseY = centerY - ((rows - 1) / 2) * spacingY + i * spacingY;
+                    const baseX = side === 'left'
+                        ? Math.max(8, centerX - sideOffsetX - 80)
+                        : Math.min(window.innerWidth - 80, centerX + sideOffsetX + 20);
+
+                    element.style.left = Math.round(baseX) + 'px';
+                    element.style.top = Math.round(baseY) + 'px';
+                    document.getElementById('backgroundLayer').appendChild(element);
+
+                    const character = {
+                        element: element,
+                        dancer: dancer,
+                        x: baseX,
+                        y: baseY,
+                        baseX: baseX,
+                        baseY: baseY,
+                        frameIndex: 0,
+                        frameTimer: 0,
+                        frameInterval: 220 + Math.random() * 300,
+                        parade: true,
+                        side: side,
+                        index: i,
+                        sync: true,
+                        offset: (i + (side === 'left' ? 0 : 0.5)) * 140 + Math.random() * 60,
+                        lifetime: 12000
+                    };
+
+                    activeCharacters.push(character);
+                }
+            }
+        }
+
+        function startScreenEffects() {
+            const shakeFrequency = isMobile() ? 500 : 300;
+            const colorShiftFrequency = isMobile() ? 1200 : 800;
+            const floatingTextFrequency = isMobile() ? 2500 : 1500;
+
+            setInterval(() => {
+                if (animationRunning && Math.random() < (isMobile() ? 0.08 : 0.12)) {
+                    const shakeIntensity = isMobile() ? 0.6 + Math.random() * 1 : 1 + Math.random() * 1.5;
+                    const shakeX = (Math.random() - 0.5) * shakeIntensity;
+                    const shakeY = (Math.random() - 0.5) * shakeIntensity;
+                    document.body.style.transform = `translate(${shakeX}px, ${shakeY}px)`;
+                    setTimeout(() => document.body.style.transform = 'translate(0, 0)', 60);
+                }
+            }, shakeFrequency);
+
+            const colorShifts = ['#1a1a1a', '#2a1a2a', '#1a2a2a', '#2a2a1a', '#2a1a1a'];
+            setInterval(() => {
+                if (animationRunning && Math.random() < 0.12) {
+                    const randomColor = colorShifts[Math.floor(Math.random() * colorShifts.length)];
+                    document.body.style.backgroundColor = randomColor;
+                    setTimeout(() => document.body.style.backgroundColor = '#1a1a1a', 180);
+                }
+            }, colorShiftFrequency);
+
+            setInterval(() => {
+                if (animationRunning && Math.random() < (isMobile() ? 0.18 : 0.36)) spawnFloatingText();
+            }, floatingTextFrequency);
+        }
+
+        function spawnFloatingText() {
+            const text = floatingPhrases[Math.floor(Math.random() * floatingPhrases.length)];
+            const element = document.createElement('div');
+            element.className = 'floating-text';
+            element.textContent = text;
+            element.style.left = (10 + Math.random() * (window.innerWidth - 120)) + 'px';
+            const startTop = window.innerHeight * (0.2 + Math.random() * 0.6);
+            element.style.top = startTop + 'px';
+            element.style.color = ['#ff6b6b', '#ffd93d', '#6bcf7f', '#4d96ff'][Math.floor(Math.random() * 4)];
+            element.style.fontSize = isMobile() ? (12 + Math.random() * 8) + 'px' : (16 + Math.random() * 18) + 'px';
+            element.style.opacity = '0.95';
+            element.style.transform = 'translateY(0)';
+
+            document.getElementById('backgroundLayer').appendChild(element);
+
+            const distance = 80 + Math.random() * 140;
+            element.animate([
+                { transform: 'translateY(0px)', opacity: 0.95 },
+                { transform: `translateY(-${distance}px)`, opacity: 0.0 }
+            ], {
+                duration: 2800 + Math.random() * 1200,
+                easing: 'cubic-bezier(.2,.8,.2,1)'
+            }).onfinish = () => element.remove();
+        }
+
+        function startVideoZoom(video) {
+            const startWidth = isMobile() ? 320 : 640;
+            const endWidth = window.innerWidth * (isMobile() ? 1.05 : 1.12);
+            const startHeight = isMobile() ? 180 : 360;
+            const endHeight = window.innerHeight * (isMobile() ? 1.05 : 1.12);
+
+            const updateZoom = () => {
+                const currentTime = video.currentTime;
+                const duration = video.duration;
+                if (duration && !isNaN(duration)) {
+                    const progress = Math.min(currentTime / duration, 1);
+                    const currentWidth = startWidth + (endWidth - startWidth) * progress;
+                    const blur = isMobile() ? progress * 1.2 : progress * 2.4;
+                    const videoContainer = document.getElementById('videoContainer');
+                    videoContainer.style.filter = `drop-shadow(0 0 ${20 + blur * 5}px rgba(139,92,246,0.6)) blur(${blur * 0.08}px)`;
+                    videoContainer.style.transform = `translate(-50%, -50%) scale(${1 + progress * 0.06})`;
+                    video.style.width = Math.min(currentWidth, window.innerWidth * 0.95) + 'px';
+                    video.style.height = (startHeight + (endHeight - startHeight) * progress) + 'px';
+                }
+                if (!video.paused && !video.ended) requestAnimationFrame(updateZoom);
+            };
+
+            video.addEventListener('playing', updateZoom);
+            video.addEventListener('timeupdate', updateZoom);
+        }
+
+        function startBackgroundAnimation() {
+            // initial gentle characters
+            spawnCharacter();
+            const spawnInterval = isMobile() ? 1400 : 700;
+            setInterval(() => {
+                if (activeCharacters.length < maxCharacters && animationRunning) spawnCharacter();
+            }, spawnInterval);
+
+            let lastPhraseTime = 0;
+            setInterval(() => {
+                if (Math.random() < (isMobile() ? 0.12 : 0.25) && activeCharacters.length < maxCharacters && animationRunning) {
+                    const now = Date.now();
+                    if (now - lastPhraseTime > 3000) { spawnPhrase(); lastPhraseTime = now; }
+                }
+            }, 1000);
+
+            const emojiInterval = isMobile() ? 3800 : 2200;
+            setInterval(() => {
+                if (Math.random() < (isMobile() ? 0.18 : 0.32) && animationRunning) spawnEmojiCharacter();
+            }, emojiInterval);
+
+            updateAnimation();
+        }
+
+        function spawnEmojiCharacter() {
+            const emoji = extraEmojis[Math.floor(Math.random() * extraEmojis.length)];
+            const element = document.createElement('div');
+            element.className = 'ascii-character';
+            element.textContent = emoji;
+            element.style.color = '#' + Math.floor(Math.random() * 16777215).toString(16);
+            element.style.fontSize = isMobile() ? (12 + Math.random() * 8) + 'px' : (16 + Math.random() * 12) + 'px';
+            element.style.opacity = 0.6 + Math.random() * 0.3;
+
+            const startX = Math.random() * window.innerWidth;
+            const startY = Math.random() * window.innerHeight;
+            element.style.left = startX + 'px';
+            element.style.top = startY + 'px';
+
+            document.getElementById('backgroundLayer').appendChild(element);
+
+            const angle = Math.random() * Math.PI * 2;
+            const speed = isMobile() ? 0.2 + Math.random() * 0.8 : 0.4 + Math.random() * 1.6;
+
+            const character = {
+                element: element,
+                x: startX,
+                y: startY,
+                vx: Math.cos(angle) * speed,
+                vy: Math.sin(angle) * speed,
+                isEmoji: true,
+                lifetime: 7000 + Math.random() * 5000
+            };
+
+            activeCharacters.push(character);
+        }
+
+        function spawnCharacter() {
+            const dancer = asciiDancers[Math.floor(Math.random() * asciiDancers.length)];
+            const element = document.createElement('div');
+            element.className = 'ascii-character';
+            element.style.color = dancer.color;
+            element.style.fontSize = isMobile() ? (10 + Math.random() * 6) + 'px' : (14 + Math.random() * 8) + 'px';
+            element.style.opacity = 0.6 + Math.random() * 0.4;
+
+            const startX = Math.max(8, Math.random() * (window.innerWidth - 80));
+            const startY = Math.max(8, Math.random() * (window.innerHeight - 80));
+            element.style.left = startX + 'px';
+            element.style.top = startY + 'px';
+            element.textContent = dancer.frames[0];
+
+            document.getElementById('backgroundLayer').appendChild(element);
+
+            const baseSpeed = isMobile() ? 0.15 + Math.random() * 0.6 : 0.3 + Math.random() * 1.0;
+            const movementType = Math.floor(Math.random() * 3);
+
+            const character = {
+                element: element,
+                dancer: dancer,
+                x: startX,
+                y: startY,
+                baseX: startX,
+                baseY: startY,
+                vx: (Math.random() - 0.5) * baseSpeed,
+                vy: (Math.random() - 0.5) * baseSpeed,
+                frameIndex: 0,
+                frameTimer: 0,
+                frameInterval: 240 + Math.random() * 380,
+                movementType: movementType,
+                speed: baseSpeed,
+                sync: false,
+                offset: Math.random() * 1000,
+                lifetime: 12000
+            };
+
+            activeCharacters.push(character);
+        }
+
+        function spawnPhrase() {
+            const phrase = floatingPhrases[Math.floor(Math.random() * floatingPhrases.length)];
+            const element = document.createElement('div');
+            element.className = 'ascii-character';
+            element.style.color = '#a8dadc';
+            element.style.fontSize = isMobile() ? (10 + Math.random() * 4) + 'px' : (14 + Math.random() * 6) + 'px';
+            element.style.opacity = 0.6 + Math.random() * 0.3;
+
+            const startX = Math.random() * (window.innerWidth - 120) + 10;
+            const startY = Math.random() * window.innerHeight;
+            element.style.left = startX + 'px';
+            element.style.top = startY + 'px';
+            element.textContent = phrase;
+
+            document.getElementById('backgroundLayer').appendChild(element);
+
+            const speed = isMobile() ? 0.05 + Math.random() * 0.3 : 0.12 + Math.random() * 0.6;
+
+            const character = {
+                element: element,
+                x: startX,
+                y: startY,
+                vx: (Math.random() - 0.5) * speed,
+                vy: (Math.random() - 0.5) * speed,
+                isPhrase: true,
+                lifetime: 9000 + Math.random() * 6000
+            };
+
+            activeCharacters.push(character);
+        }
+
+        function updateAnimation() {
+            const padding = 220;
+            const toRemove = [];
+            const nowMs = performance.now();
+
+            for (let i = 0; i < activeCharacters.length; i++) {
+                const char = activeCharacters[i];
+
+                if (char.isPhrase || char.isEmoji) {
+                    char.lifetime -= 16;
+                    if (char.lifetime <= 0) {
+                        char.element.remove();
+                        toRemove.push(i);
+                        continue;
+                    }
+                    char.x += char.vx;
+                    char.y += char.vy;
+                } else {
+                    // frame update (dance)
+                    char.frameTimer += 16;
+                    const effectiveInterval = Math.max(70, char.frameInterval * (1 - beatIntensity * 0.6));
+                    if (char.frameTimer >= effectiveInterval) {
+                        char.frameIndex = (char.frameIndex + 1) % char.dancer.frames.length;
+                        char.element.textContent = char.dancer.frames[char.frameIndex];
+                        char.frameTimer = 0;
+                    }
+
+                    if (char.parade) {
+                        // parade movement: fixed column around video, vertical bob synced to beat, mirrored lateral sway
+                        const t = nowMs * 0.002;
+                        const freq = 1.6 + beatIntensity * 5.5; // bob speed
+                        const amp = 6 + beatIntensity * 16;    // bob amplitude
+                        const phase = char.index * 0.5;        // ordering offset by row
+                        const y = char.baseY + Math.sin(t * freq + phase) * amp;
+                        const lateral = Math.abs(Math.sin(t * freq + phase)) * (3 + beatIntensity * 6);
+                        const x = char.side === 'left' ? char.baseX - lateral : char.baseX + lateral;
+
+                        char.x = x;
+                        char.y = y;
+
+                        // lifetime and removal handled below
+                        char.lifetime -= 16;
+                        if (char.lifetime <= 0) {
+                            char.element.remove();
+                            toRemove.push(i);
+                            continue;
+                        }
+                    } else if (char.sync) {
+                        // sync dance for non-parade characters
+                        const t = nowMs * 0.002;
+                        const freq = 1.2 + beatIntensity * 4.0;
+                        const amp = 4 + beatIntensity * 10;
+                        char.y = char.baseY + Math.sin((t + char.offset * 0.001) * freq) * amp;
+                        char.x += Math.sin((t + char.offset * 0.001) * 0.6) * 0.25;
+                    } else {
+                        // gentle ordered movement (no rotation)
+                        if (char.movementType === 0) {
+                            char.x += char.vx; char.y += Math.sin((nowMs + char.offset) * 0.0008) * 0.4;
+                        } else if (char.movementType === 1) {
+                            char.y += char.speed * 0.6;
+                            if (Math.random() < 0.01) char.vx = (Math.random() - 0.5) * 0.6;
+                            char.x += char.vx * 0.3;
+                        } else {
+                            if (Math.random() < 0.02) {
+                                char.vx = (Math.random() - 0.5) * 0.8;
+                                char.vy = (Math.random() - 0.5) * 0.8;
+                            }
+                            char.x += char.vx * 0.6;
+                            char.y += char.vy * 0.6;
+                        }
+
+                        // decrement lifetime for non-parade wanderers
+                        if (char.lifetime) {
+                            char.lifetime -= 16;
+                            if (char.lifetime <= 0) {
+                                char.element.remove();
+                                toRemove.push(i);
+                                continue;
+                            }
+                        }
+                    }
+
+                    // bounds removal
+                    if (char.x < -padding || char.x > window.innerWidth + padding ||
+                        char.y < -padding || char.y > window.innerHeight + padding) {
+                        if (char.element && char.element.remove) char.element.remove();
+                        toRemove.push(i);
+                        continue;
+                    }
+                }
+
+                // apply position (keep text orientation unchanged)
+                char.element.style.left = Math.round(char.x) + 'px';
+                char.element.style.top = Math.round(char.y) + 'px';
+            }
+
+            for (let i = toRemove.length - 1; i >= 0; i--) activeCharacters.splice(toRemove[i], 1);
+
+            if (animationRunning) requestAnimationFrame(updateAnimation);
+        }
+    </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Are you sure?</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            width: 100%; height: 100vh; background: #1a1a1a;
+            display: flex; justify-content: center; align-items: center;
+            overflow: hidden; font-family: 'Courier New', monospace;
+            transition: background-color 0.1s;
+        }
+        body.color-shift { background-color: #2a1a2a; }
+        #backgroundLayer {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 1; pointer-events: none; overflow: hidden;
+        }
+        .ascii-character {
+            position: absolute;
+            font-family: 'Courier New', monospace;
+            white-space: pre;
+            user-select: none;
+            line-height: 1.1;
+            will-change: transform, left, top;
+        }
+        .floating-text {
+            position: absolute;
+            font-family: 'Courier New', monospace;
+            white-space: nowrap;
+            user-select: none;
+            opacity: 0.9;
+            z-index: 2;
+            pointer-events: none;
             /* keep text straight and readable */
             transform-origin: center;
         }
