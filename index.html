@@ -236,7 +236,7 @@
     </div>
 
     <div id="videoContainer">
-        <video id="prankVideo" playsinline autoplay muted>
+        <video id="prankVideo" playsinline>
             <source src="./HEYYEYAAEYAAAEYAEYAA%20(HQ)(3).mp4" type="video/mp4">
         </video>
     </div>
@@ -318,9 +318,11 @@
             document.getElementById('buttonContainer').style.display = 'none';
             document.getElementById('videoContainer').style.display = 'block';
             const video = document.getElementById('prankVideo');
+            
             video.play().catch(error => {
                 console.error('Playback failed:', error);
             });
+            
             animationRunning = true;
             startBackgroundAnimation();
             startScreenEffects();
@@ -333,6 +335,12 @@
         function initAudioContext(video) {
             try {
                 audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                
+                // Resume audio context if suspended
+                if (audioContext.state === 'suspended') {
+                    audioContext.resume();
+                }
+                
                 analyser = audioContext.createAnalyser();
                 analyser.fftSize = 256;
                 
